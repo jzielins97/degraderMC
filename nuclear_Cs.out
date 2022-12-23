@@ -1,0 +1,137 @@
+>>> Event: 9
+ Number of secondaries: 14
+ particle 7 : kaon0L energy: 215.06181621152
+ particle 8 : kaon+ energy: 15.410444523571
+
+>>> Event: 68
+Number of secondaries: 20
+ particle 13 : kaon- energy: 39.597568433301
+ particle 14 : kaon+ energy: 191.18799980737
+
+>>> Event: 99
+ Number of secondaries: 20
+ particle 11 : kaon0S energy: 169.22249124714
+ particle 12 : kaon+ energy: 54.125334776942
+
+Number of secondaries: 16
+ particle 10 : kaon- energy: 306.54243274586
+ particle 11 : kaon+ energy: 385.43598879831
+
+ Number of secondaries: 21
+ particle 17 : kaon0S energy: 34.94862397294
+ particle 18 : kaon0S energy: 23.371758258636
+
+Number of secondaries: 15
+ particle 9 : kaon- energy: 194.79448202723
+ particle 10 : kaon0S energy: 46.672848941946
+
+ Number of secondaries: 17
+ particle 11 : kaon- energy: 18.311089769782
+ particle 12 : kaon+ energy: 94.556160223624
+
+Number of secondaries: 16
+ particle 11 : kaon- energy: 162.18753250488
+ particle 12 : kaon+ energy: 207.54234868384
+
+Number of secondaries: 20
+ particle 13 : kaon0L energy: 40.810392999338
+ particle 15 : kaon- energy: 26.319015909597
+
+Number of secondaries: 18
+ particle 13 : kaon0S energy: 25.439303796413
+ particle 14 : kaon+ energy: 166.67039102544
+
+Number of secondaries: 17
+ particle 13 : kaon0L energy: 64.388191051854
+ particle 14 : kaon0L energy: 220.88717291426
+
+ Number of secondaries: 20
+ particle 14 : kaon- energy: 78.311574143419
+ particle 15 : kaon+ energy: 18.695789488761
+
+Number of secondaries: 21
+ particle 12 : kaon- energy: 27.8489640232
+ particle 13 : kaon+ energy: 259.11078461261
+
+Number of secondaries: 11
+ particle 9 : kaon- energy: 10.399144292687
+ particle 10 : kaon0L energy: 5.5732094289427
+
+ Number of secondaries: 11
+ particle 8 : kaon- energy: 393.41839428848
+ particle 9 : kaon0L energy: 222.55443847578
+
+Number of secondaries: 12
+ particle 8 : kaon- energy: 15.318607422061
+ particle 9 : kaon0S energy: 6.6493941023652
+
+Number of secondaries: 16
+ particle 10 : kaon0L energy: 18.968503367729
+ particle 11 : kaon0S energy: 38.841216085841
+
+Number of secondaries: 21
+ particle 13 : kaon- energy: 232.25744408646
+ particle 14 : kaon0L energy: 69.133815592289
+
+Number of secondaries: 15
+ particle 10 : kaon0S energy: 16.100413206365
+ particle 11 : kaon0S energy: 208.76033450749
+
+Number of secondaries: 16
+ particle 8 : kaon- energy: 270.06309122723
+ particle 9 : kaon0S energy: 169.34430892974
+
+Number of secondaries: 17
+ particle 12 : kaon0L energy: 13.8035381049
+ particle 13 : kaon0S energy: 36.902787598297
+
+
+6 K-K+
+3 K-Ks  
+4 K-Kl
+2 K+Ks
+1 K+Kl
+2 KsKl 
+2 KsKs  
+1 KlKl
+
+21 / 1000 events generated   with C target (Parylene, to be precise)
+
+4 K-K+
+5 K-Ks
+6 K-Kl
+0 K+Ks
+2 K+Kl
+2 KsKl
+3 KsKs
+0 KlKl
+
+22 / 1000 events generated with He3 target
+
+ 0 events / 1000 generated   with He3 target    and E/Q < 10 keV (deuteron)  [3/1000 with < 20 keV]
+ 4 events / 1000 generated   with C target      and E/Q < 10 keV (B10, C11, alpha, Li7)
+50 events / 1000 generated   with Na target     and E/Q < 10 keV 
+ 7 events / 1000 generated   with Na target     and E/Q <  2 keV 
+20 events / 21   generated   with Iodine target and E/Q < 10 keV
+ 4 events / 21   generated   with Iodine target and E/Q <  1 keV
+17 events / 269  generated   with Pb208 target  and E/Q < 10 keV
+
+Iodine target (pure I127): I  121(2),         123(1),         125(2), 126(7)
+                           Te 120(2), 121(1),         123(1), 124(2), 125(1), 126(1)
+                           Sb                         122(1)
+
+Na target :                                                                        Na21(13), Na22(112)
+                                                                          Ne19(2), Ne20(75), Ne21(178), Ne22(148)
+                                                                  F17(1), F18(37), F19(25),  F20(20),   F21(4)
+                                                         O15(11), O16(88), O17(28), O18(5),  O19(1)
+                                                 N13(5), N14(58), N15(44), N16(4)
+                                        C11(3), C12(64), C13(17), C14(6)
+                                        B10(11),B11(14)
+                      Be7(12), Be8(11), Be9(12), Be10(1), Be11(1)
+                      Li6(61), Li7(19), Li8(5) 
+     He3(19),                  He6(6)
+
+
+
+
+He3 target: deuteron

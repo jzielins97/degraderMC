@@ -1,0 +1,197 @@
+//
+// ********************************************************************
+// * License and Disclaimer                                           *
+// *                                                                  *
+// * The  Geant4 software  is  copyright of the Copyright Holders  of *
+// * the Geant4 Collaboration.  It is provided  under  the terms  and *
+// * conditions of the Geant4 Software License,  included in the file *
+// * LICENSE and available at  http://cern.ch/geant4/license .  These *
+// * include a list of copyright holders.                             *
+// *                                                                  *
+// * Neither the authors of this software system, nor their employing *
+// * institutes,nor the agencies providing financial support for this *
+// * work  make  any representation or  warranty, express or implied, *
+// * regarding  this  software system or assume any liability for its *
+// * use.  Please see the license in the file  LICENSE  and URL above *
+// * for the full disclaimer and the limitation of liability.         *
+// *                                                                  *
+// * This  code  implementation is the result of  the  scientific and *
+// * technical work of the GEANT4 collaboration.                      *
+// * By using,  copying,  modifying or  distributing the software (or *
+// * any work based  on the software)  you  agree  to acknowledge its *
+// * use  in  resulting  scientific  publications,  and indicate your *
+// * acceptance of all terms of the Geant4 Software license.          *
+// ********************************************************************
+//
+//
+/// copy of \file B1SteppingAction.cc
+/// \brief Implementation of the B2SteppingAction class
+
+#include "B2SteppingAction.hh"
+#include "B2EventAction.hh"
+#include "B2bDetectorConstruction.hh"
+#include "B2MagneticField.hh"
+
+#include "G4Step.hh"
+#include "G4Event.hh"
+#include "G4RunManager.hh"
+#include "G4LogicalVolume.hh"
+#include "G4Material.hh"
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+B2SteppingAction::B2SteppingAction(B2EventAction* eventAction)
+: G4UserSteppingAction(),
+  fEventAction(eventAction),
+  fScoringVolume(0)
+{}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+B2SteppingAction::~B2SteppingAction()
+{}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void B2SteppingAction::UserSteppingAction(const G4Step* step)
+{
+  if (!fScoringVolume) {
+    const B2bDetectorConstruction* detectorConstruction
+      = static_cast<const B2bDetectorConstruction*>
+        (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
+    fScoringVolume = detectorConstruction->GetScoringVolume();
+  }
+
+  // get volume of the current step
+  G4LogicalVolume* log_volume 
+    = step->GetPreStepPoint()->GetPhysicalVolume()->GetLogicalVolume();
+//  alternative access to logical volume
+//    = step->GetPreStepPoint()->GetTouchableHandle()
+//      ->GetVolume()->GetLogicalVolume();
+
+  // collect energy deposited in this step
+  G4double edepStep = step->GetTotalEnergyDeposit();
+
+//
+// two possibilities here: we either have zero energy, or we're leaving the target; 
+// in both cases, we want to know what's happening
+//
+
+  G4double particle_mass = step->GetPostStepPoint()->GetMass();
+  G4double particle_charge = step->GetPostStepPoint()->GetCharge();
+  G4Material* G4MaterialBefore = step->GetPreStepPoint()->GetMaterial();
+  G4Material* G4MaterialAfter = step->GetPostStepPoint()->GetMaterial();
+
+// select antiprotons
+
+  if (abs(particle_mass - 938.) > 1.) return;
+  if (particle_charge > 0) return;
+
+  G4cout << "++ B2Stepping action: investigating antiproton" << G4endl;
+  G4cout << "++ Energy deposited : " << edepStep << G4endl;
+
+
+  //
+  G4VPhysicalVolume* ph_volume
+    = step->GetPreStepPoint()->GetPhysicalVolume();
+
+// where are we?
+   G4ThreeVector position = step->GetPostStepPoint()->GetPosition();
+   G4ThreeVector momentum = step->GetPostStepPoint()->GetMomentum();
+   G4ThreeVector p_direction = step->GetPostStepPoint()->GetMomentumDirection();
+   G4double time = step->GetPostStepPoint()->GetLocalTime();
+
+  G4cout << "++ Position : " << position[0] << "," << position[1] << "," << position[2] << G4endl;
+
+//  need this as a fourvector for the B-field call
+   double fourvect[4];
+   fourvect[0] = position[0];
+   fourvect[1] = position[1];
+   fourvect[2] = position[2];
+   fourvect[3] = time;
+
+// collect energy deposited in this step
+   G4double eResidual = step->GetPostStepPoint()->GetKineticEnergy();
+
+   G4cout << "++ Energy after step :" << eResidual << G4endl;
+
+// should return B ... need to check that manager and detector field exist...
+   G4double Bfield[6];
+   G4FieldManager *pFieldMgr = log_volume->GetFieldManager();
+   G4bool doesFieldExist = log_volume->GetFieldManager()->DoesFieldExist();
+//   G4Field *pDetField = log_volume->GetFieldManager()->GetDetectorField();
+   log_volume->GetFieldManager()->GetDetectorField()->GetFieldValue(fourvect, Bfield);
+
+    G4cout
+      << G4endl
+      << "++ B2SteppingAction ++++++++++++++++" << G4endl
+      << " +++++++ going from " << G4MaterialBefore->GetName() << " to " << G4MaterialAfter->GetName() << G4endl
+      << "+++++++++++++++++++++" << G4endl;
+
+//      G4cout  
+//    << G4endl
+//    << " -----------------------------------------------------------" << G4endl
+//    << " antiproton experiencing Bfield of " << Bfield[0] << " , " << Bfield[1] << " , " << Bfield[2] << G4endl 
+//    << " at position  " << fourvect[0] << " , " << fourvect[1] << " , " << fourvect[2] << G4endl
+//    << " px,py,pz:    " << momentum[0] << " , " << momentum[1] << " , " << momentum[2] << G4endl
+//    << " px,py,pz / p " << p_direction[0] << " , " << p_direction[1] << " , " << p_direction[2] << G4endl
+//    << " -----------------------------------------------------------" << G4endl;    
+
+// are we in the target?
+
+//     if ( log_volume != fScoringVolume) return;
+
+// yes, we're in the target
+//
+// two possibilities here: we either have zero energy, or we're leaving the target; in both cases, 
+// we need to wrap up:
+//
+ 
+ // then print the position of the track, which particle it is
+
+     if ((G4MaterialAfter->GetName() == "G4_Galactic") &&
+//         ( (G4MaterialBefore->GetName() == "G4_NAPHTHALENE") ||
+         (G4MaterialBefore->GetName() == "G4_Al")                  )  {
+
+// we're at the transition, leaving the target
+      G4cout
+    << G4endl
+    << "------------------------------------------------------------" << G4endl
+    << "antiproton leaving Gold layer downstream of thick degrader at " << position << " with energy " << eResidual << G4endl
+    << " going from " << G4MaterialBefore->GetName() << " to " << G4MaterialAfter->GetName() << G4endl
+    << "     energy deposit of step to here= " << edepStep << G4endl
+    << " ; m = " << particle_charge*particle_mass << G4endl
+    << "------------------------------------------------------------" << G4endl;
+ 
+      G4cout  
+    << G4endl
+    << " -----------------------------------------------------------" << G4endl
+    << " antiproton experiencing Bfield of " << Bfield[0] << " , " << Bfield[1] << " , " << Bfield[2] << G4endl 
+    << " at exit of final degrader " << G4endl
+    << " in physical volume " << &ph_volume << G4endl
+    << " -----------------------------------------------------------" << G4endl;    
+
+     return;
+   }
+
+// alternatively, we're still in the target, but BOOM!
+  
+  if (eResidual <= 1.E-6) {
+      G4cout
+    << G4endl
+    << "------------------------------------------------------------" << G4endl
+    << "antiproton annihilating in target at " << position << " with energy " << eResidual << G4endl
+    << " going from " << G4MaterialBefore->GetName() << " to " << G4MaterialAfter->GetName() << G4endl
+    << "     energy deposit of step to here= " << edepStep << G4endl
+    << " ; m = " << particle_charge*particle_mass << G4endl
+    << "------------------------------------------------------------" << G4endl;
+      return;
+  }
+
+
+  //
+
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+

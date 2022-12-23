@@ -1,0 +1,29 @@
+# Macro file for the initialization of example B2 
+# in interactive session
+#
+# Set some default verbose
+/control/verbose 2
+/control/saveHistory
+/run/verbose 0
+#
+# Change the default number of threads (in multi-threaded mode)
+/run/numberOfThreads 1
+#
+# Foil geometry
+/AEgIS/degrader/setFirstMaterial G4_NAPHTHALENE
+/AEgIS/degrader/setFirstThickness 0 nm
+
+/AEgIS/degrader/setSecondMaterial G4_MYLAR
+/AEgIS/degrader/setSecondThickness 1400 nm
+
+/AEgIS/BField off
+#
+# Initialize kernel
+/run/initialize
+#
+/gun/particle anti_proton
+/gun/energy 100 keV
+/tracking/verbose 0
+
+
+/run/beamOn 100000

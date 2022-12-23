@@ -1,0 +1,21 @@
+# Macro file for example B2
+# 
+# Can be run in batch, without graphic
+# or interactively: Idle> /control/execute run1.mac
+#
+# Change the default number of workers (in multi-threading mode) 
+#/run/numberOfThreads 4
+#
+# Initialize kernel
+/run/initialize
+#
+# Default kinematics: 
+# antiproton proton 100 MeV 
+#
+/gun/particle anti_proton
+/gun/energy 100 keV
+/tracking/verbose 1
+/hits/verbose 1
+# /globalField/setValue 0 0 2.5 tesla
+#/B2/field 0 0 2.5 tesla
+/run/beamOn 1
