@@ -2,7 +2,7 @@
 # in interactive session
 #
 # Set some default verbose
-/control/verbose 2
+/control/verbose 0
 /control/saveHistory
 /run/verbose 0
 #
@@ -11,12 +11,12 @@
 #
 # Foil geometry
 /AEgIS/degrader/setFirstMaterial G4_NAPHTHALENE
-/AEgIS/degrader/setFirstThickness 300 nm
+/AEgIS/degrader/setFirstThickness 0 nm
 
 /AEgIS/degrader/setSecondMaterial G4_MYLAR
 /AEgIS/degrader/setSecondThickness 1400 nm
 
-/AEgIS/BField off
+/AEgIS/BField on
 #
 # Initialize kernel
 /run/initialize

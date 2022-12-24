@@ -79,10 +79,10 @@ G4bool B2TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
   G4String partName = particle->GetParticleName();
 
   // select antiprotons
-  if (abs(particle_mass - 938.) > 1.) return false;
-  if (particle_charge > 0) return false;
-  if (partName != "anti_proton") return false;
-// get position and mimentum of the antiproton
+  if (abs(particle_mass - 938.) > 1.) return true;
+  if (particle_charge > 0) return true;
+  if (partName != "anti_proton") return true;
+// get position and momentum of the antiproton
    G4ThreeVector position = aStep->GetPostStepPoint()->GetPosition();
    G4ThreeVector momentumDirection = aStep->GetPostStepPoint()->GetMomentumDirection();
 
