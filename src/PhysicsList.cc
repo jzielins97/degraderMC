@@ -49,8 +49,6 @@
 #include "G4IonPhysicsPHP.hh"
 #include "G4IonINCLXXPhysics.hh"
 
-#include "GammaNuclearPhysics.hh"
-
 // particles
 
 #include "G4BosonConstructor.hh"
@@ -98,9 +96,6 @@ PhysicsList::PhysicsList()
   ////RegisterPhysics( new G4IonQMDPhysics(verb));
   ////RegisterPhysics( new G4IonINCLXXPhysics(verb));
 
-  // Gamma physics
-  //
-  RegisterPhysics( new GammaNuclearPhysics("gamma"));
 
 }
 

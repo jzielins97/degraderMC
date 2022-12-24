@@ -1,0 +1,7 @@
+executable = /afs/cern.ch/user/j/jzielins/AEgIS/degraderMC/DegraderSimulation.sh
+arguments  = G4_NAPHTHALENE $(thickness) on 
+output     = output/G4DegraderSim.$(ClusterId).$(ProcId).out
+error      = error/G4DegraderSim.$(ClusterId).$(ProcId).err
+log        = log/G4DegraderSim.$(ClusterId).$(ProcId).log
++JobFlavour = "testmatch"
+queue thickness from seq 20 20 1000 |
