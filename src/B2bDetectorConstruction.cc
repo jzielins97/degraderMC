@@ -83,7 +83,9 @@ B2bDetectorConstruction::B2bDetectorConstruction():
   fWorldLV(NULL),
   fFirstDegraderLV(NULL),fFirstMetalizationLV(NULL),
   fSecondDegraderLV(NULL), fSecondMetalizationLV(NULL),
-  fDumpLV(NULL),fDetectorLV(NULL),fMagneticLV(NULL),  
+  fDumpLV(NULL),fDetectorLV(NULL),fMagneticLV(NULL),
+  fFirstDegraderMaterial(NULL),fFirstMetalizationMaterial(NULL),
+  fSecondDegraderMaterial(NULL),fSecondMetalizationMaterial(NULL),
   fCheckOverlaps(true)
 {
   fMessenger = new B2bDetectorMessenger(this);
@@ -101,15 +103,15 @@ B2bDetectorConstruction::~B2bDetectorConstruction()
 {
   delete fStepLimit;
   delete fMessenger;
+
+  // DefineMaterials();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
  
 G4VPhysicalVolume* B2bDetectorConstruction::Construct()
 {
-  // Define materials
   DefineMaterials();
-  // Define volumes
   return DefineVolumes();
 }
 
@@ -129,12 +131,12 @@ void B2bDetectorConstruction::DefineMaterials()
   
   //---------------------  Target and Degrader material -------------------
   
-  fFirstDegraderMaterial  = nistManager->FindOrBuildMaterial("G4_NAPHTHALENE");
-  fSecondDegraderMaterial = nistManager->FindOrBuildMaterial("G4_MYLAR");
+  if(!fFirstDegraderMaterial) fFirstDegraderMaterial  = nistManager->FindOrBuildMaterial("G4_AIR");
+  if(!fSecondDegraderMaterial) fSecondDegraderMaterial = nistManager->FindOrBuildMaterial("G4_MYLAR");
   
   // Vapor deposited material
-  fFirstMetalizationMaterial = nistManager->FindOrBuildMaterial("G4_Al");
-  fSecondMetalizationMaterial = nistManager->FindOrBuildMaterial("G4_Al");
+  if(!fFirstMetalizationMaterial) fFirstMetalizationMaterial = nistManager->FindOrBuildMaterial("G4_Al");
+  if(!fSecondMetalizationMaterial) fSecondMetalizationMaterial = nistManager->FindOrBuildMaterial("G4_Al");
 
   fDumpMaterial = nistManager->FindOrBuildMaterial("G4_Galactic");
 
@@ -641,6 +643,7 @@ void B2bDetectorConstruction::SetMaxStep(G4double maxStep)
 G4Material* B2bDetectorConstruction::SetMaterial(G4LogicalVolume* fGeneralLV, G4String materialName)
 {
   G4NistManager* nistManager = G4NistManager::Instance();
+  if(G4StrUtil::contains(materialName, "PARYLENE")) materialName = "G4_NAPHTHALENE";
   G4Material* pttoMaterial = nistManager->FindOrBuildMaterial(materialName);
   if (fGeneralLV) {
      if ( pttoMaterial ) {
@@ -655,7 +658,7 @@ G4Material* B2bDetectorConstruction::SetMaterial(G4LogicalVolume* fGeneralLV, G4
 	 << materialName << " not found" << G4endl;
      }
   }
-  G4cout << "Exit funcion "<<G4endl;
+  G4cout<<pttoMaterial<<G4endl;
   return pttoMaterial;
 }
 
