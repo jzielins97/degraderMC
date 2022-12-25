@@ -3,4 +3,4 @@
 #Set up compulers and environment
 . /afs/cern.ch/user/j/jzielins/AEgIS/degraderMC/lxplus-setup.sh
 
-./exampleB2
+./exampleB2b $1

@@ -47,6 +47,8 @@ set(EXAMPLEB2B_SCRIPTS
   gui.mac
   init_vis.mac
   vis.mac
+  compile.sh
+  run.sh
   )
 
 foreach(_script ${EXAMPLEB2B_SCRIPTS})
