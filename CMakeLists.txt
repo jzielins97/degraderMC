@@ -44,12 +44,12 @@ target_link_libraries(exampleB2b ${Geant4_LIBRARIES})
 #
 set(EXAMPLEB2B_SCRIPTS
   exampleB2.in
-  ./src/bfield.csv
   gui.mac
   init_vis.mac
   vis.mac
   compile.sh
   run.sh
+  bfield.csv
   )
 
 foreach(_script ${EXAMPLEB2B_SCRIPTS})
