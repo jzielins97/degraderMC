@@ -94,6 +94,9 @@ fi
 # Set up compilers and environments
 . $GITPATH/lxplus-setup.sh
 
+# copy the magnetic field file
+cp $GITPATH/src/bfield.csv $WORKDIR
+
 # execute simulation
 echo
 echo "Start time: $(date)"
