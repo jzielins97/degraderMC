@@ -152,6 +152,7 @@ void B2bDetectorConstruction::DefineMaterials()
 
 G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
 {
+  G4cout<<"++++++ definition of the geometry ++++++"<<G4endl;
   // Sizes of the principal geometrical components (solids)
 // ==========================================================
   // beam tube for antiproton transport
@@ -169,13 +170,13 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
 
   // steps
   G4double maxFoilStep = 50*nm;
-  G4double maxFieldStep = 5*cm;
+  G4double maxFieldStep = beamtubeLength/5;
   G4double maxMetalizationStep = 5 * nm;
 
 // ==========================================================
 
   // G4double worldLength = foilGap/2 + foilMetalizationLength + fFirstDegraderThickness + foilGap + fSecondDegraderThickness + foilMetalizationLength + foilGap + dumpLength;
-  G4double worldLength = foilGap/2 + fFirstMetalizationThickness + fFirstDegraderThickness + 2*foilGap + beamtubeLength  + foilGap/2;
+  G4double worldLength = 1.1 * (foilGap/2 + fFirstMetalizationThickness + fFirstDegraderThickness + 2*foilGap + beamtubeLength  + foilGap/2);
   G4double dumpLength = 0.01*worldLength;
   
   // Definitions of Solids, Logical Volumes, Physical Volumes
@@ -195,7 +196,7 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
 		       0.*deg,
 		       360.*deg);
   
-  G4cout << " World extends from " << -worldLength/2 << " to " << worldLength/2 << G4endl;
+  G4cout << "World extends from " << -worldLength/2 << " to " << worldLength/2 << G4endl;
 
 //  G4LogicalVolume* worldLV
   fWorldLV = new G4LogicalVolume(
@@ -216,8 +217,8 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
 			       0,               // copy number
 			       fCheckOverlaps); // checking overlaps
   
-  G4ThreeVector positionFirstDegrader = G4ThreeVector(0,0,-worldLength/2 + dumpLength + foilGap/4 + fFirstMetalizationThickness + fFirstDegraderThickness/2);
-  // G4ThreeVector positionFirstDegrader = G4ThreeVector(0,0,-worldLength/2 + dumpCap + foilGap/2 + foilMetalizationLength + fFirstDegraderThickness/2);
+  // G4ThreeVector positionFirstDegrader = G4ThreeVector(0,0,-worldLength/2 + dumpLength + foilGap/4 + fFirstMetalizationThickness + fFirstDegraderThickness/2);
+  G4ThreeVector positionFirstDegrader = G4ThreeVector(0,0,-worldLength/2/1.1 + foilGap/2 + fFirstMetalizationThickness + fFirstDegraderThickness/2);
   if(fFirstDegraderThickness > 0){ // only place thin degrader if its thickness is more than 0
     // this degrader has a metalization layer:
     // *********************************************************
@@ -225,7 +226,7 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
     // *********************************************************
   
     G4ThreeVector positionFirstMetalization = positionFirstDegrader - G4ThreeVector(0,0,fFirstDegraderThickness/2 + fFirstMetalizationThickness/2);
-    G4cout << " Metalization layer (upstream) is placed at " << positionFirstMetalization << G4endl;
+    G4cout << "Metalization of the first foils is placed at " << positionFirstMetalization << G4endl;
 
     fFirstMetalizationS = new G4Tubs("firstMetalization",
 				     0.,
@@ -252,12 +253,10 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
 
     // --------------------------------------------------------
     // tiny steps in the trace lines (made of Au) ...
-    // Sets a max step length in the "detector" region, with G4StepLimiter, of 5 nm
     // ---------------------------------------------------------
-    if(!fFirstMetalizationLV) G4cout<<"fFirstMetalizationLV is NULL"<<std::endl;
     fFirstMetalizationLV->SetUserLimits(new G4UserLimits(maxMetalizationStep));
 
-    G4cout << "First foil metalization is " << fFirstMetalizationThickness/mm << " mm of " << fFirstMetalizationMaterial->GetName() << G4endl;
+    G4cout << "    Metalization of the first foil is " << fFirstMetalizationThickness/nm << " nm of " << fFirstMetalizationMaterial->GetName() << G4endl;
 
     // *********************************************************
     // ============== First degrader foil    ===================
@@ -265,7 +264,7 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
 
 
     
-    G4cout << " First degrader foil is placed at " << positionFirstDegrader << G4endl;
+    G4cout << "First degrader foil is placed at " << positionFirstDegrader << G4endl;
 
     fFirstDegraderS = new G4Tubs("firstDegrader",
 				 0.,
@@ -293,13 +292,11 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
     // --------------------------------------------------
     // tiny steps in the degrader foil ...
     // Sets a max step length in the "target" region, with G4StepLimiter, of 50 nm
-    // --------------------------------------------------
-
-    
+    // --------------------------------------------------    
     fStepLimit = new G4UserLimits(maxFoilStep);
     fFirstDegraderLV->SetUserLimits(fStepLimit);
 
-    G4cout << "First degrader foil is " << fFirstDegraderThickness/mm << " mm of " << fFirstDegraderMaterial->GetName() << G4endl;
+    G4cout << "    First degrader foil is " << fFirstDegraderThickness/nm << " nm of " << fFirstDegraderMaterial->GetName() << G4endl;
 
   }else{ // only place thin degrader if its thickness is more than 0
     fFirstDegraderLV = NULL;
@@ -313,7 +310,7 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
   
    G4ThreeVector positionBeamTube = positionFirstDegrader + G4ThreeVector(0,0,fFirstDegraderThickness/2 + 2*foilGap + beamtubeLength/2);
    // G4ThreeVector positionBeamTube = G4ThreeVector(0,0,-beamtubeLength);
-   G4cout << " Magnetic tube is placed at " << positionBeamTube << G4endl;
+   G4cout << "Magnetic tube is placed at " << positionBeamTube << G4endl;
   
    // BBBBBBBBBBBBBBBB overlapping magnetic field region BBBBBBBBBBBBBB
   
@@ -343,16 +340,16 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
 				   fCheckOverlaps); // checking overlaps
 
    // set step limit in tube with magnetic field
-   fMagneticLV->SetUserLimits(new G4UserLimits(beamtubeLength));
+   fMagneticLV->SetUserLimits(new G4UserLimits(maxFieldStep));
 
   // BBBBBBBBBBBBBBBB
 
   // *********************************************************
   // Second Degrader foil (in magnetic field)
   // *********************************************************
-  G4ThreeVector positionSecondDegrader = G4ThreeVector(0,0,-(111.4*cm - beamtubeLength/2));
+  G4ThreeVector positionSecondDegrader = G4ThreeVector(0,0,(111.4*cm - beamtubeLength/2));
   // G4ThreeVector positionSecondDegrader = positionFirstDegrader + G4ThreeVector(0,0,fFirstDegraderThickness/2 + foilGap + fSecondDegraderThickness/2);
-  G4cout << " Second degrader foil is placed at " << positionSecondDegrader << G4endl;
+  G4cout << "Second degrader foil is placed at " << positionBeamTube + positionSecondDegrader << G4endl;
   
   fSecondDegraderS = new G4Tubs("secondDegrader",
 				0.,
@@ -382,18 +379,18 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
 // Sets a max step length in the "target" region, with G4StepLimiter, of 50 nm
 // --------------------------------------------------
 
-  fStepLimit = new G4UserLimits(4*maxFoilStep);
-  fSecondDegraderLV->SetUserLimits(fStepLimit);
+ fStepLimit = new G4UserLimits(maxFoilStep);
+ fSecondDegraderLV->SetUserLimits(fStepLimit);
 
-  G4cout << "Second degrader foil is " << fSecondDegraderThickness/mm << " mm of "
-         << fSecondDegraderMaterial->GetName() << G4endl;
+ G4cout << "    Second degrader foil is " << fSecondDegraderThickness/nm << " nm of "
+	<< fSecondDegraderMaterial->GetName() << G4endl;
 
 // *********************************************************
 // ======= second degrader metalization layer    ===========
 // *********************************************************
   
   G4ThreeVector positionSecondMetalization = positionSecondDegrader + G4ThreeVector(0,0, fSecondDegraderThickness/2 + fSecondMetalizationThickness/2);
-  G4cout << " Metalization layer (downstream) is placed at " << positionSecondMetalization << G4endl;
+  G4cout << "Metalization of the second foil is placed at " << positionBeamTube+positionSecondMetalization << G4endl;
 
 
   fSecondMetalizationS = new G4Tubs("secondMetalization",
@@ -425,9 +422,9 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
 // ---------------------------------------------------------
 
   fStepLimit = new G4UserLimits(maxMetalizationStep);
-  fSecondDegraderLV->SetUserLimits(fStepLimit);
+  fSecondMetalizationLV->SetUserLimits(fStepLimit);
 
-  G4cout << "Trace on foil is " << fSecondMetalizationThickness/mm << " mm of " << fSecondMetalizationMaterial->GetName() << G4endl;
+  G4cout << "    Metalization of the second foil is " << fSecondMetalizationThickness/nm << " nm of " << fSecondMetalizationMaterial->GetName() << G4endl;
   
 
   // *********************************************************
@@ -517,7 +514,7 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
 
   fDumpLV->SetUserLimits(new G4UserLimits(worldLength));
 
-  G4cout << "Dump is " << dumpLength/mm << " mm of " << fDumpMaterial->GetName() << G4endl;
+  G4cout << "Dump is " << dumpLength/nm << " nm of " << fDumpMaterial->GetName() << G4endl;
 
   // Visualization attributes
 

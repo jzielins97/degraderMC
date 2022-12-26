@@ -77,27 +77,36 @@ void B2SteppingAction::UserSteppingAction(const G4Step* step)
   // check if it is antiproton
   if( particleType->GetParticleName() != "anti_proton"){
     // it isn't an antiproton, kill it
+    // G4cout<<"++ not antiproton ++"<<G4endl;
     step->GetTrack()->SetTrackStatus(fStopAndKill);
     return;
-  }else{
-    // check if the momentum direction isn;t perpendicular to the BField
-    G4ThreeVector preDirection = step->GetPreStepPoint()->GetMomentumDirection();
-    G4ThreeVector prePosition = step->GetPreStepPoint()->GetPosition();
-    G4ThreeVector postDirection = step->GetPostStepPoint()->GetMomentumDirection();
-    G4ThreeVector postPosition = step->GetPostStepPoint()->GetPosition();
-    // G4cout << preDirection << " " << step->GetPreStepPoint()->GetPosition()<<G4endl;
-    if(postDirection[2] < 1e-10 && abs(postPosition[2] - prePosition[2])*CLHEP::nm < 1e-4){
-      // Antiproton is moving perpendicular to the BField.
-      // This creates circular motion that is not moving forward in the Z direction.
-      // Antiproton will never hit the dump. Therefore, kill it now
-      step->GetTrack()->SetTrackStatus(fStopAndKill);
-      return;
-    }
-  }    
+  }
+  
+  // check if the momentum direction isn;t perpendicular to the BField
+  G4ThreeVector preDirection = step->GetPreStepPoint()->GetMomentumDirection();
+  G4ThreeVector prePosition = step->GetPreStepPoint()->GetPosition();
+  G4ThreeVector postDirection = step->GetPostStepPoint()->GetMomentumDirection();
+  G4ThreeVector postPosition = step->GetPostStepPoint()->GetPosition();
+  // G4cout << preDirection << " " << step->GetPreStepPoint()->GetPosition()<<G4endl;
+  if(postDirection[2] < 1e-10 && abs(postPosition[2] - prePosition[2])/CLHEP::nm < 1e-3){
+    // Antiproton is moving perpendicular to the BField.
+    // This creates circular motion that is not moving forward in the Z direction.
+    // Antiproton will never hit the dump. Therefore, kill it now
+    // G4cout<<"++ kill antiproton (momentum direction) ++"<<G4endl;
+    step->GetTrack()->SetTrackStatus(fStopAndKill);
+    return;
+  }
   
   G4VPhysicalVolume* ph_volume = step->GetPostStepPoint()->GetPhysicalVolume();
+  // Check if antiproton is moving in oposite direction
+  if(postPosition[2] < prePosition[2] && ph_volume->GetName() == "MagneticField" ){
+    step->GetTrack()->SetTrackStatus(fStopAndKill);
+    return;
+  }
+    
   if(ph_volume->GetName() != "Dump") return;
   // particle hit the Dump volume, kill its track
+  // G4cout<<"++ kill antiproton (dump)++"<<G4endl;
   step->GetTrack()->SetTrackStatus(fStopAndKill);
   return;
 }
