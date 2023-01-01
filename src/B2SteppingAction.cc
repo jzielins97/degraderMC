@@ -77,7 +77,6 @@ void B2SteppingAction::UserSteppingAction(const G4Step* step)
   // check if it is antiproton
   if( particleType->GetParticleName() != "anti_proton"){
     // it isn't an antiproton, kill it
-    // G4cout<<"++ not antiproton ++"<<G4endl;
     step->GetTrack()->SetTrackStatus(fStopAndKill);
     return;
   }
@@ -92,21 +91,19 @@ void B2SteppingAction::UserSteppingAction(const G4Step* step)
     // Antiproton is moving perpendicular to the BField.
     // This creates circular motion that is not moving forward in the Z direction.
     // Antiproton will never hit the dump. Therefore, kill it now
-    // G4cout<<"++ kill antiproton (momentum direction) ++"<<G4endl;
     step->GetTrack()->SetTrackStatus(fStopAndKill);
     return;
   }
   
   G4VPhysicalVolume* ph_volume = step->GetPostStepPoint()->GetPhysicalVolume();
   // Check if antiproton is moving in oposite direction
-  if(postPosition[2] < prePosition[2] && ph_volume->GetName() == "MagneticField" ){
+  if(postDirection[2] < 0 && ( ph_volume->GetName() == "MagneticField" || ph_volume->GetName() == "World" ) ){
     step->GetTrack()->SetTrackStatus(fStopAndKill);
     return;
   }
     
   if(ph_volume->GetName() != "Dump") return;
   // particle hit the Dump volume, kill its track
-  // G4cout<<"++ kill antiproton (dump)++"<<G4endl;
   step->GetTrack()->SetTrackStatus(fStopAndKill);
   return;
 }

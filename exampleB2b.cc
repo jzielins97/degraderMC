@@ -41,6 +41,7 @@
 #include "G4StepLimiterPhysics.hh"
 
 #include "Randomize.hh"
+// #include "G4Random.hh"
 
 #include "G4VisExecutive.hh"
 #include "G4UIExecutive.hh"
@@ -55,6 +56,9 @@ int main(int argc,char** argv)
   if ( argc == 1 ) {
     ui = new G4UIExecutive(argc, argv);
   }
+
+  G4long seed = time(NULL);
+  G4Random::setTheSeed(seed);
 
   // Optionally: choose a different Random engine...
   // G4Random::setTheEngine(new CLHEP::MTwistEngine);

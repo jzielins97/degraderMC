@@ -103,6 +103,8 @@ G4bool B2TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
    man->FillNtupleDColumn(2,2,momentumDirection[2]*eResidual/CLHEP::keV);
    man->FillNtupleDColumn(2,3,eResidual/CLHEP::keV);
    man->AddNtupleRow(2);
+
+   // aStep->GetTrack()->SetTrackStatus(fStopAndKill);
   
   return true;
 }

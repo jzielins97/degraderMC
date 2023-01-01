@@ -160,7 +160,7 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
   G4double beamtubeLength = 216*cm;
   
   // radius for the foils
-  G4double foilRadius = 10 * cm;
+  G4double foilRadius = 7.5 * cm;
 
   // antiproton dump (Au)
   G4double dumpRadius = 1.2*beamtubeRadius;
@@ -311,6 +311,7 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
    G4ThreeVector positionBeamTube = positionFirstDegrader + G4ThreeVector(0,0,fFirstDegraderThickness/2 + 2*foilGap + beamtubeLength/2);
    // G4ThreeVector positionBeamTube = G4ThreeVector(0,0,-beamtubeLength);
    G4cout << "Magnetic tube is placed at " << positionBeamTube << G4endl;
+   G4cout << "  From "<<positionBeamTube[2] - beamtubeLength/2<<" to "<<positionBeamTube[2] + beamtubeLength/2<<G4endl;
   
    // BBBBBBBBBBBBBBBB overlapping magnetic field region BBBBBBBBBBBBBB
   
