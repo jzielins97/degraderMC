@@ -69,9 +69,8 @@ void B2TrackerSD::Initialize(G4HCofThisEvent* hce)
 
 G4bool B2TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 {
-  // // where is it comming from?
-  G4VPhysicalVolume* pv_after = aStep->GetPostStepPoint()->GetPhysicalVolume();
-  if(pv_after->GetName() == "Detector") return true; // particle already analysed
+  // only analyse first time it enters the detector
+  if(!aStep->IsFirstStepInVolume()) return true; // particle already analysed
   
   G4double particle_mass = aStep->GetPostStepPoint()->GetMass();
   G4double particle_charge = aStep->GetPostStepPoint()->GetCharge();
@@ -83,11 +82,11 @@ G4bool B2TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
   if (particle_charge > 0) return true;
   if (partName != "anti_proton") return true;
 // get position and momentum of the antiproton
-   G4ThreeVector position = aStep->GetPostStepPoint()->GetPosition();
-   G4ThreeVector momentumDirection = aStep->GetPostStepPoint()->GetMomentumDirection();
+   G4ThreeVector position = aStep->GetTrack()->GetPosition();
+   G4ThreeVector momentumDirection = aStep->GetTrack()->GetMomentumDirection();
 
 // how much energy is left
-   G4double eResidual = aStep->GetPostStepPoint()->GetKineticEnergy();
+   G4double eResidual = aStep->GetTrack()->GetKineticEnergy();
 
 //   G4cout << "++ Energy after aStep :" << eResidual << G4endl;
    auto man = G4AnalysisManager::Instance();

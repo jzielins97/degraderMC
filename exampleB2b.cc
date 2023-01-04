@@ -57,8 +57,8 @@ int main(int argc,char** argv)
     ui = new G4UIExecutive(argc, argv);
   }
 
-  G4long seed = time(NULL);
-  G4Random::setTheSeed(seed);
+  // G4long seed = time(NULL);
+  // G4Random::setTheSeed(seed);
 
   // Optionally: choose a different Random engine...
   // G4Random::setTheEngine(new CLHEP::MTwistEngine);

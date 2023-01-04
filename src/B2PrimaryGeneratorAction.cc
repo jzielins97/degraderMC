@@ -52,7 +52,7 @@ B2PrimaryGeneratorAction::B2PrimaryGeneratorAction()
   // default particle kinematic
 
   G4ParticleDefinition* particleDefinition 
-    = G4ParticleTable::GetParticleTable()->FindParticle("proton");
+    = G4ParticleTable::GetParticleTable()->FindParticle("anti_proton");
 
   fParticleGun->SetParticleDefinition(particleDefinition);
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
@@ -97,7 +97,7 @@ void B2PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   G4double x0 = G4INCL::Random::gauss(sigxy);
   G4double y0 = G4INCL::Random::gauss(sigxy);
 
-  fParticleGun->SetParticlePosition(G4ThreeVector(0., 0., -0.99*worldZHalfLength));
+  fParticleGun->SetParticlePosition(G4ThreeVector(0., 0., -worldZHalfLength/1.1));
 
 //  and add an offset of 2 mm along x
 

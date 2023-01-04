@@ -170,7 +170,7 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
 
   // steps
   G4double maxFoilStep = 50*nm;
-  G4double maxFieldStep = beamtubeLength/5;
+  G4double maxFieldStep = beamtubeLength/10;
   G4double maxMetalizationStep = 5 * nm;
 
 // ==========================================================
@@ -348,7 +348,7 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
   // *********************************************************
   // Second Degrader foil (in magnetic field)
   // *********************************************************
-  G4ThreeVector positionSecondDegrader = G4ThreeVector(0,0,(111.4*cm - beamtubeLength/2));
+  G4ThreeVector positionSecondDegrader = G4ThreeVector(0,0,(- beamtubeLength/2 + 111.4*cm  + fSecondDegraderThickness/2));
   // G4ThreeVector positionSecondDegrader = positionFirstDegrader + G4ThreeVector(0,0,fFirstDegraderThickness/2 + foilGap + fSecondDegraderThickness/2);
   G4cout << "Second degrader foil is placed at " << positionBeamTube + positionSecondDegrader << G4endl;
   
@@ -432,7 +432,7 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
   // ======= DETECTOR   ===========
   // *********************************************************
   
-  G4ThreeVector positionDetector = positionSecondDegrader + G4ThreeVector(0,0, fSecondDegraderThickness/2 + 3*fSecondMetalizationThickness/2);
+  G4ThreeVector positionDetector = positionSecondMetalization + G4ThreeVector(0,0, fSecondMetalizationThickness/2 + 2.5*nm);
   G4cout << " Detector is placed at " << positionDetector << G4endl;
 
 
@@ -470,7 +470,6 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
 // =======   particles dump  =========================
 // *********************************************************
   
-  // G4ThreeVector positionDump = positionSecondMetalization + G4ThreeVector(0,0,foilMetalizationLength/2 + foilGap + dumpLength/2);
   G4ThreeVector positionDump = G4ThreeVector(0,0,worldLength/2 - dumpLength/2);
   
   G4cout << " Dump is placed at " << positionDump << G4endl;
