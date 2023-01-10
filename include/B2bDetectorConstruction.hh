@@ -125,7 +125,8 @@ class B2bDetectorConstruction : public G4VUserDetectorConstruction
     G4double           fSecondDegraderThickness;
     G4double           fFirstMetalizationThickness;
     G4double           fSecondMetalizationThickness;
-    
+
+    G4double           fMagneticFieldStart;
 
     G4UserLimits*      fStepLimit;       // pointer to user step limits
 

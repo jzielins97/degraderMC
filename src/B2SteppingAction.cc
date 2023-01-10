@@ -62,17 +62,19 @@ B2SteppingAction::~B2SteppingAction() {}
 
 void B2SteppingAction::UserSteppingAction(const G4Step* step)
 {
+  
   G4Track* track = step->GetTrack();
   G4ParticleDefinition* particleType = track->GetDefinition();
-  //     G4cout << "++++++++++++ Step output ++++++++++"<< G4endl
+  // G4cout << "++++++++++++ Step output ++++++++++"<< G4endl;
   // 	 << "+ Particle:"<<particleType->GetParticleName()<<G4endl
   // 	 << "+ mass:"<<step->GetPostStepPoint()->GetMass()<<G4endl
   // 	 << "+ charge:"<<step->GetPostStepPoint()->GetCharge()<<G4endl
   //     << "+ position:"<< track->GetPosition()<<G4endl
   //     << "+ direction:"<< track->GetMomentumDirection()<<G4endl
   // 	 << "+ energy:"<<step->GetPostStepPoint()->GetKineticEnergy()<<G4endl
-  // 	 << "+ Moving from "<<step->GetPreStepPoint()->GetPhysicalVolume()->GetName()
-  // 	 <<" to "<<step->GetPostStepPoint()->GetPhysicalVolume()->GetName()<<G4endl
+  //     << "+ Moving from "<<step->GetPreStepPoint()->GetPhysicalVolume()->GetName()
+  //     <<" to "<<step->GetPostStepPoint()->GetPhysicalVolume()->GetName()<<G4endl
+  //     << "Magnetic moment ="<<step->GetPostStepPoint()->GetMagneticMoment()<<G4endl
   // 	 << "deposited energy:"<<step->GetTotalEnergyDeposit()<<G4endl
   //     << "+++++++++++++++++++++++++++++++++++"<<G4endl<<G4endl;
   

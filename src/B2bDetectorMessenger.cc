@@ -91,19 +91,19 @@ B2bDetectorMessenger::B2bDetectorMessenger(B2bDetectorConstruction* Det)
   fSecondDegraderMaterialCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
   fFirstMetalizationMaterialCmd = new G4UIcmdWithAString("/AEgIS/degrader/metalization/setFirstMaterial",this);
-  fFirstMetalizationMaterialCmd->SetGuidance("Select Material of the First Metalization.");
+  fFirstMetalizationMaterialCmd->SetGuidance("Select material of the metalization of the first foil.");
   fFirstMetalizationMaterialCmd->SetParameterName("firstMetalizationMaterial",false);
   fFirstMetalizationMaterialCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
   fSecondMetalizationMaterialCmd = new G4UIcmdWithAString("/AEgIS/degrader/metalization/setSecondMaterial",this);
-  fSecondMetalizationMaterialCmd->SetGuidance("Select Material of the Second Metalization.");
+  fSecondMetalizationMaterialCmd->SetGuidance("Select material of the metalization layer of the second foil.");
   fSecondMetalizationMaterialCmd->SetParameterName("secondMetalizationMaterial",false);
   fSecondMetalizationMaterialCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
   
   fMagneticFieldOnCmd = new G4UIcmdWithAString("/AEgIS/BField",this);
-  fSecondDegraderMaterialCmd->SetGuidance("Switch on/off magnetic field");
-  fSecondDegraderMaterialCmd->SetParameterName("magneticFieldOn",false);
-  fSecondDegraderMaterialCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
+  fMagneticFieldOnCmd->SetGuidance("Switch on/off magnetic field");
+  fMagneticFieldOnCmd->SetParameterName("magneticFieldOn",false);
+  fMagneticFieldOnCmd->AvailableForStates(G4State_PreInit,G4State_Idle);
 
 }
 

@@ -40,17 +40,15 @@ using namespace std;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B2MagneticField::B2MagneticField()
+B2MagneticField::B2MagneticField(double posZ)
 : G4MagneticField(), 
-  fMessenger(nullptr), fBz(2.5*tesla)
+  fMessenger(nullptr)
 {
-  // define commands for this class
-  DefineCommands();
-
 //  read the full B-field map (array as CSV giving r,z, Br and Bz)
 //  this array will be stored as aegisrB,aegisrZ,aegisbR,aegisbZ 
 //  and set aegisbGranularity (expect 65592 entries in the field map)
-
+    fMagneticFieldStart = posZ; // Z position where magnetic field starts
+    
     FILE *fp;
     G4double A[4];
     ifstream ifs;
@@ -74,10 +72,8 @@ B2MagneticField::B2MagneticField()
       if (ifs.eof()) {break;}
       stringstream stream(s1);
       int j=0;
-      while(1)
+      while(stream >> A[j])
       {
-        stream >> A[j];
-        stream >> c;
         j++;
         if (!stream) {break;}
       }
@@ -86,12 +82,9 @@ B2MagneticField::B2MagneticField()
       aegisbR[k]=A[2];
       aegisbZ[k]=A[3];
       aegisbGranularity = aegisbGranularity+1;
-//      G4cout << " r, z, Br, Bz "  
-//             << aegisrB[k] << " ; " << aegiszB[k] << " ; " << aegisbR[k] << " ; " << aegisbZ[k] 
-//             << " ; " << aegisbGranularity << G4endl;
-
     }
     ifs.close();
+    
     return;
 }
 
@@ -124,9 +117,12 @@ void B2MagneticField::GetFieldValue(const G4double position[4],G4double *bField)
 
 // cordinates are in mm, map is in cm
 
-      G4double radius = sqrt(position[0]*position[0] + position[1]*position[1])/10.;
-      G4int index = position[2]/10;
-            index = (index+250)*301 + (radius*10);
+  G4double radius = sqrt(position[0]*position[0] + position[1]*position[1])/10.;
+  // G4int index = position[2]/10;
+  // index = (index+250)*301 + (radius*10);
+  G4int index = (position[2] - fMagneticFieldStart)/10;
+  index = index*301 + radius*10;
+  
 
 //      G4cout << " vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv" << G4endl;      
 //      G4cout << " number of points in field map: " << aegisbGranularity << G4endl;
@@ -134,54 +130,39 @@ void B2MagneticField::GetFieldValue(const G4double position[4],G4double *bField)
 
 // B-field in Tesla (map is in Gauss)
 
-     if ((position[2]>-3.5*cm)||(radius>10.*cm)||(index>=aegisbGranularity)||(index<0)) {
-       bField[0] = 0.;
-       bField[1] = 0.;
-       bField[2] = 0.1;
-     } else {
-       if (radius!=0.) {
-          bField[0] = aegisbR[index]*position[0]/radius/10000.;
-          bField[1] = aegisbR[index]*position[1]/radius/10000.;
-       } else {
-          bField[0] = 0.;
-          bField[1] = 0.;
-       }
-       bField[2] = aegisbZ[index]/10000.;
-     }
+  if ( (position[2]<fMagneticFieldStart) ||
+       (position[2] - fMagneticFieldStart > 217*cm) ||
+       (radius>10.*cm) ||
+       (index>=aegisbGranularity) ||
+       (index<0)) {
+    bField[0] = 0.;
+    bField[1] = 0.;
+    bField[2] = 0.1; // for now, if this works, change to 0.1
+  } else {
+    if (radius!=0.) {
+      bField[0] = aegisbR[index]*position[0]/radius/10000.;
+      bField[1] = aegisbR[index]*position[1]/radius/10000.;
+    } else {
+      bField[0] = 0.;
+      bField[1] = 0.;
+    }
+    bField[2] = aegisbZ[index]/10000.;
+  }
 
-     if ((index>=aegisbGranularity)||(index<0)) {
-//     G4cout << " index out of bounds i,z,r !!! " << index << " " << position[2] << " " << radius << G4endl;
-     } else {
-//     G4cout << " GetFieldValue: x,y,z,r,index: " << position[0] << " " << position[1] << " " 
-//            << position[2] << " " << radius  << " , " << index << G4endl;
-//     G4cout << " GetValue: Bx,Bz,Bz,Br " << bField[0] << " " << bField[1] << " " << bField[2] << 
-//               " ; " << aegisbR[index] << " " << aegisbZ[index] << G4endl;
-     }
-//      G4cout << " ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" << G4endl;      
-
-//     bField[0] = 0.;
-//     bField[1] = 0.;
-//     bField[2] = 0.1;
+    //  if ((index>=aegisbGranularity)||(index<0)) {
+    //    G4cout << " index out of bounds i,z,r !!! " << index << " " << position[2] << " " << radius << G4endl;
+    //  } else {
+    // G4cout << " GetFieldValue: x,y,z,r,index: " << position[0] << " " << position[1] << " " 
+    //        << position[2] << " " << radius  << " , " << index << G4endl;
+    // G4cout << " GetValue: Bx,Bz,Bz,Br " << bField[0] << " " << bField[1] << " " << bField[2] << 
+    //           " ; " << aegisbR[index] << " " << aegisbZ[index] << G4endl;
+    //  }
+    //  G4cout << " ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" << G4endl;      
      
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void B2MagneticField::DefineCommands()
-{
-  // Define /B2/field command directory using generic messenger class
-  fMessenger = new G4GenericMessenger(this,
-				      "/AEgIS/field/",
-				      "Field control");
-
-  // fieldValue command 
-  auto& valueCmd = fMessenger->DeclareMethodWithUnit("value",
-						     "tesla",
-						     &B2MagneticField::SetField, 
-						     "Set field strength.");
-  
-  valueCmd.SetParameterName("field", true);
-  valueCmd.SetDefaultValue("1.");
+    //  bField[0] = 0.;
+    //  bField[1] = 0.;
+    //  bField[2] = 0.1;
+     
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
