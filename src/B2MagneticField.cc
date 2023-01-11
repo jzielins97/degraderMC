@@ -137,7 +137,7 @@ void B2MagneticField::GetFieldValue(const G4double position[4],G4double *bField)
        (index<0)) {
     bField[0] = 0.;
     bField[1] = 0.;
-    bField[2] = 0.1; // for now, if this works, change to 0.1
+    bField[2] = 0.01; // for now, if this works, change to 0.1
   } else {
     if (radius!=0.) {
       bField[0] = aegisbR[index]*position[0]/radius/10000.;

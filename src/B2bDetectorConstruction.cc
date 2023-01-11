@@ -156,27 +156,27 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
   // Sizes of the principal geometrical components (solids)
 // ==========================================================
   // beam tube for antiproton transport
-  G4double beamtubeRadius = 10 * cm;
-  G4double beamtubeLength = 100*cm;
+  G4double magneticRadius = 10 * cm;
+  G4double magneticLength = 150*cm;
   
   // radius for the foils
   G4double foilRadius = 7.5 * cm;
 
   // antiproton dump (Au)
-  G4double dumpRadius = 1.2*beamtubeRadius;
+  G4double dumpRadius = 1.2*magneticRadius;
 
   // distance between foils
   G4double foilGap = 10*cm;
 
   // steps
   G4double maxFoilStep = 50*nm;
-  G4double maxFieldStep = beamtubeLength/10;
+  G4double maxFieldStep = magneticLength/10;
   G4double maxMetalizationStep = 5 * nm;
 
 // ==========================================================
 
   // G4double worldLength = foilGap/2 + foilMetalizationLength + fFirstDegraderThickness + foilGap + fSecondDegraderThickness + foilMetalizationLength + foilGap + dumpLength;
-  G4double worldLength = 1.1 * (foilGap/2 + beamtubeLength  + foilGap/2);
+  G4double worldLength = 1.1 * (foilGap/2 + magneticLength  + foilGap/2);
   G4double dumpLength = 0.01*worldLength;
   
   // Definitions of Solids, Logical Volumes, Physical Volumes
@@ -224,10 +224,10 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
 
   
    G4ThreeVector positionBeamTube = G4ThreeVector(0,0,0);
-   // G4ThreeVector positionBeamTube = G4ThreeVector(0,0,-beamtubeLength);
+   // G4ThreeVector positionBeamTube = G4ThreeVector(0,0,-magneticLength);
    G4cout << "Magnetic tube is placed at " << positionBeamTube << G4endl;
-   G4cout << "  From "<<positionBeamTube[2] - beamtubeLength/2<<" to "<<positionBeamTube[2] + beamtubeLength/2<<G4endl;
-   fMagneticFieldStart = positionBeamTube[2] - beamtubeLength/2;
+   G4cout << "  From "<<positionBeamTube[2] - magneticLength/2<<" to "<<positionBeamTube[2] + magneticLength/2<<G4endl;
+   fMagneticFieldStart = positionBeamTube[2] - magneticLength/2;
   
    // BBBBBBBBBBBBBBBB overlapping magnetic field region BBBBBBBBBBBBBB
   
@@ -235,8 +235,8 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
   
    fMagneticS = new G4Tubs("magneticTubs",
 			   0.,
-			   beamtubeRadius,
-			   beamtubeLength/2,
+			   magneticRadius,
+			   magneticLength/2,
 			   0.,
 			   360.*deg);
   
@@ -267,8 +267,10 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
     // ===== First degrader metalization layer (downstream) ====
     // *********************************************************
 
-    // first foil is positioned 30 cm in the magnetic field (where field is 0.1169T)
-    G4ThreeVector positionFirstMetalization = G4ThreeVector(0,0, -beamtubeLength/2 + 30*cm);
+    // magnetic field starts 250 cm from the center of the experiment
+    // first foil is positioned at 170 cm from the center
+    // so it is 250 - 170 = 80 cm from the beginning of the magnetic field
+    G4ThreeVector positionFirstMetalization = G4ThreeVector(0,0, -magneticLength/2 + 80*cm -50 * cm + fFirstMetalizationThickness/2);
     G4cout << "Metalization of the first foils is placed at " << positionFirstMetalization << G4endl;
     
     fFirstMetalizationS = new G4Tubs("firstMetalization",
@@ -350,7 +352,9 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
   // *********************************************************
   // Second Degrader foil (in magnetic field)
   // *********************************************************
-  G4ThreeVector positionSecondDegrader(0,0,-beamtubeLength/2 + 88.1 * cm + fSecondDegraderThickness/2);
+  // main degrader is placed 111.9 cm from the center of the experiment
+  // so it is 250 - 111.9 = 138.1 cm from beginning of the magnetic field
+  G4ThreeVector positionSecondDegrader(0,0,-magneticLength/2 + 138.1 * cm + fSecondDegraderThickness/2);
   // G4threevector positionSecondDegrader = positionFirstDegrader + G4ThreeVector(0,0,fFirstDegraderThickness/2 + foilGap + fSecondDegraderThickness/2);
   G4cout << "Second degrader foil is placed at " << positionBeamTube + positionSecondDegrader << G4endl;
   
