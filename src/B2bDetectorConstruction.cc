@@ -270,7 +270,7 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
     // magnetic field starts 250 cm from the center of the experiment
     // first foil is positioned at 170 cm from the center
     // so it is 250 - 170 = 80 cm from the beginning of the magnetic field
-    G4ThreeVector positionFirstMetalization = G4ThreeVector(0,0, -magneticLength/2 + 80*cm -50 * cm + fFirstMetalizationThickness/2);
+    G4ThreeVector positionFirstMetalization = G4ThreeVector(0,0, -magneticLength/2 + 80*cm + fFirstMetalizationThickness/2);
     G4cout << "Metalization of the first foils is placed at " << positionFirstMetalization << G4endl;
     
     fFirstMetalizationS = new G4Tubs("firstMetalization",
