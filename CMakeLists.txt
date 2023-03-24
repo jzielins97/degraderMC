@@ -3,7 +3,7 @@
 # Setup the project
 #
 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
-project(B2b)
+project(DEGRADERSIM)
 
 #----------------------------------------------------------------------------
 # Find Geant4 package, activating all available UI and Vis drivers by default
@@ -34,16 +34,16 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
 #
-add_executable(exampleB2b exampleB2b.cc ${sources} ${headers})
-target_link_libraries(exampleB2b ${Geant4_LIBRARIES})
+add_executable(degraderSim degraderSim.cc ${sources} ${headers})
+target_link_libraries(degraderSim ${Geant4_LIBRARIES})
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we
 # build B2b. This is so that we can run the executable directly because it
 # relies on these scripts being in the current working directory.
 #
-set(EXAMPLEB2B_SCRIPTS
-  exampleB2.in
+set(DEGRADERSIM_SCRIPTS
+  degraderSim.in
   gui.mac
   init_vis.mac
   vis.mac
@@ -52,7 +52,7 @@ set(EXAMPLEB2B_SCRIPTS
   bfield.csv
   )
 
-foreach(_script ${EXAMPLEB2B_SCRIPTS})
+foreach(_script ${DEGRADERSIM_SCRIPTS})
   configure_file(
     ${PROJECT_SOURCE_DIR}/${_script}
     ${PROJECT_BINARY_DIR}/${_script}
@@ -63,5 +63,5 @@ endforeach()
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
-install(TARGETS exampleB2b DESTINATION bin)
+install(TARGETS degraderSim DESTINATION bin)
 

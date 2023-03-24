@@ -24,66 +24,34 @@
 // ********************************************************************
 //
 //
-/// \file B2RunAction.cc
-/// \brief Implementation of the B2RunAction class
+/// \file AEgISEventAction.hh
+/// \brief Definition of the AEgISEventAction class
 
-#include "B2RunAction.hh"
+#ifndef AEgISEventAction_h
+#define AEgISEventAction_h 1
 
-#include "G4Run.hh"
-#include "G4RunManager.hh"
+#include "G4UserEventAction.hh"
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+#include "globals.hh"
 
-B2RunAction::B2RunAction()
- : G4UserRunAction()
-{ 
-  // set printing event number per each 100 events
-  G4RunManager::GetRunManager()->SetPrintProgress(1000);
-  auto man = G4AnalysisManager::Instance();
-  man->SetNtupleMerging(true);
+class AEgISRunAction;
 
-  man->SetFirstNtupleId(1);
+/// Event action class
 
-  man->CreateNtuple("fPosition","Antiproton Position in mm");
-  man->CreateNtupleDColumn("x_mm");
-  man->CreateNtupleDColumn("y_mm");
-  man->CreateNtupleDColumn("z_mm");
-  man->FinishNtuple();
-
-  man->CreateNtuple("fMomentum","Antiproton Momentum in keV");
-  man->CreateNtupleDColumn("px_keV");
-  man->CreateNtupleDColumn("py_keV");
-  man->CreateNtupleDColumn("pz_keV");
-  man->CreateNtupleDColumn("kineticEnergy_keV");
-  man->FinishNtuple();
-
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-B2RunAction::~B2RunAction()
-{}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void B2RunAction::BeginOfRunAction(const G4Run*)
-{ 
-  //inform the runManager to save random number seed
-  G4RunManager::GetRunManager()->SetRandomNumberStore(false);
-  auto man = G4AnalysisManager::Instance();
-
-  G4String filename = "man_output.root";
-  man->OpenFile(filename);
-}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void B2RunAction::EndOfRunAction(const G4Run *)
+class AEgISEventAction : public G4UserEventAction
 {
-  auto man = G4AnalysisManager::Instance();
+  public:
+    AEgISEventAction(AEgISRunAction* runAction);
+    virtual ~AEgISEventAction();
 
-  man->Write();
-  man->CloseFile();
-}
+    virtual void  BeginOfEventAction(const G4Event* );
+    virtual void    EndOfEventAction(const G4Event* );
+
+  private:
+    AEgISRunAction* fRunAction;
+
+};
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+#endif

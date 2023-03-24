@@ -24,10 +24,10 @@
 // ********************************************************************
 //
 //
-/// \file B2PrimaryGeneratorAction.cc
-/// \brief Implementation of the B2PrimaryGeneratorAction class
+/// \file AEgISPrimaryGeneratorAction.cc
+/// \brief Implementation of the AEgISPrimaryGeneratorAction class
 
-#include "B2PrimaryGeneratorAction.hh"
+#include "AEgISPrimaryGeneratorAction.hh"
 
 #include "G4LogicalVolumeStore.hh"
 #include "G4LogicalVolume.hh"
@@ -43,7 +43,7 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B2PrimaryGeneratorAction::B2PrimaryGeneratorAction()
+AEgISPrimaryGeneratorAction::AEgISPrimaryGeneratorAction()
  : G4VUserPrimaryGeneratorAction()
 {
   G4int nofParticles = 1;
@@ -61,14 +61,14 @@ B2PrimaryGeneratorAction::B2PrimaryGeneratorAction()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B2PrimaryGeneratorAction::~B2PrimaryGeneratorAction()
+AEgISPrimaryGeneratorAction::~AEgISPrimaryGeneratorAction()
 {
   delete fParticleGun;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B2PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
+void AEgISPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
   // This function is called at the begining of event
 

@@ -24,11 +24,11 @@
 // ********************************************************************
 //
 //
-/// \file exampleB2b.cc
-/// \brief Main program of the B2b example
+/// \file exampleAEgIS.cc
+/// \brief Main program of the AEgIS example
 
-#include "B2bDetectorConstruction.hh"
-#include "B2ActionInitialization.hh"
+#include "AEgISDetectorConstruction.hh"
+#include "AEgISActionInitialization.hh"
 
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
@@ -73,14 +73,14 @@ int main(int argc,char** argv)
 
   // Set mandatory initialization classes
   //
-  runManager->SetUserInitialization(new B2bDetectorConstruction());
+  runManager->SetUserInitialization(new AEgISDetectorConstruction());
 
   G4VModularPhysicsList* physicsList = new FTFP_BERT;
   physicsList->RegisterPhysics(new G4StepLimiterPhysics());
   runManager->SetUserInitialization(physicsList);
     
   // Set user action classes
-  runManager->SetUserInitialization(new B2ActionInitialization());
+  runManager->SetUserInitialization(new AEgISActionInitialization());
   
   // Initialize visualization
   //

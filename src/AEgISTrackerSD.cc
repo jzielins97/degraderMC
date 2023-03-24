@@ -24,10 +24,10 @@
 // ********************************************************************
 //
 //
-/// \file B2TrackerSD.cc
-/// \brief Implementation of the B2TrackerSD class
+/// \file AEgISTrackerSD.cc
+/// \brief Implementation of the AEgISTrackerSD class
 
-#include "B2TrackerSD.hh"
+#include "AEgISTrackerSD.hh"
 #include "G4HCofThisEvent.hh"
 #include "G4Step.hh"
 #include "G4ThreeVector.hh"
@@ -37,7 +37,7 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B2TrackerSD::B2TrackerSD(const G4String& name,
+AEgISTrackerSD::AEgISTrackerSD(const G4String& name,
                          const G4String& hitsCollectionName) 
  : G4VSensitiveDetector(name),
    fHitsCollection(NULL)
@@ -47,16 +47,16 @@ B2TrackerSD::B2TrackerSD(const G4String& name,
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B2TrackerSD::~B2TrackerSD() 
+AEgISTrackerSD::~AEgISTrackerSD() 
 {}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B2TrackerSD::Initialize(G4HCofThisEvent* hce)
+void AEgISTrackerSD::Initialize(G4HCofThisEvent* hce)
 {
   // Create hits collection
 
-  fHitsCollection = new B2TrackerHitsCollection(SensitiveDetectorName, collectionName[0]); 
+  fHitsCollection = new AEgISTrackerHitsCollection(SensitiveDetectorName, collectionName[0]); 
 
   // Add this collection in hce
 
@@ -67,7 +67,7 @@ void B2TrackerSD::Initialize(G4HCofThisEvent* hce)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-G4bool B2TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
+G4bool AEgISTrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 {
   // // where is it comming from?
   G4VPhysicalVolume* pv_after = aStep->GetPostStepPoint()->GetPhysicalVolume();
@@ -111,7 +111,7 @@ G4bool B2TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B2TrackerSD::EndOfEvent(G4HCofThisEvent*)
+void AEgISTrackerSD::EndOfEvent(G4HCofThisEvent*)
 {
   if ( verboseLevel>1 ) { 
      G4int nofHits = fHitsCollection->entries();

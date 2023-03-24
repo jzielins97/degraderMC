@@ -24,34 +24,57 @@
 // ********************************************************************
 //
 //
-/// \file B2EventAction.hh
-/// \brief Definition of the B2EventAction class
+/// \file AEgISEventAction.cc
+/// \brief Implementation of the AEgISEventAction class
 
-#ifndef B2EventAction_h
-#define B2EventAction_h 1
+#include "AEgISEventAction.hh"
 
-#include "G4UserEventAction.hh"
-
-#include "globals.hh"
-
-class B2RunAction;
-
-/// Event action class
-
-class B2EventAction : public G4UserEventAction
-{
-  public:
-    B2EventAction(B2RunAction* runAction);
-    virtual ~B2EventAction();
-
-    virtual void  BeginOfEventAction(const G4Event* );
-    virtual void    EndOfEventAction(const G4Event* );
-
-  private:
-    B2RunAction* fRunAction;
-
-};
+#include "G4Event.hh"
+#include "G4EventManager.hh"
+#include "G4TrajectoryContainer.hh"
+#include "G4Trajectory.hh"
+#include "G4ios.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#endif
+AEgISEventAction::AEgISEventAction(AEgISRunAction* runAction)
+: G4UserEventAction(),
+  fRunAction(runAction)
+{}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+AEgISEventAction::~AEgISEventAction()
+{}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void AEgISEventAction::BeginOfEventAction(const G4Event*)
+{}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void AEgISEventAction::EndOfEventAction(const G4Event* event)
+{
+  // get number of stored trajectories
+
+  G4TrajectoryContainer* trajectoryContainer = event->GetTrajectoryContainer();
+  G4int n_trajectories = 0;
+  if (trajectoryContainer) n_trajectories = trajectoryContainer->entries();
+
+  // periodic printing
+
+  G4int eventID = event->GetEventID();
+  if ( eventID < 100 || eventID % 1000 == 0) {
+    G4cout << ">>> Event: " << eventID  << G4endl;
+    if ( trajectoryContainer ) {
+      G4cout << "    " << n_trajectories
+             << " trajectories stored in this event." << G4endl;
+    }
+//    G4VHitsCollection* hc = event->GetHCofThisEvent()->GetHC(0);
+//    G4cout << "    "  
+//           << hc->GetSize() << " hits stored in this event" << G4endl;
+  }
+}  
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

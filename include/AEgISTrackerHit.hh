@@ -24,11 +24,11 @@
 // ********************************************************************
 //
 //
-/// \file B2TrackerHit.hh
-/// \brief Definition of the B2TrackerHit class
+/// \file AEgISTrackerHit.hh
+/// \brief Definition of the AEgISTrackerHit class
 
-#ifndef B2TrackerHit_h
-#define B2TrackerHit_h 1
+#ifndef AEgISTrackerHit_h
+#define AEgISTrackerHit_h 1
 
 #include "G4VHit.hh"
 #include "G4THitsCollection.hh"
@@ -42,16 +42,16 @@
 /// and position of charged particles in a selected volume:
 /// - fTrackID, fChamberNB, fEdep, fPos
 
-class B2TrackerHit : public G4VHit
+class AEgISTrackerHit : public G4VHit
 {
 public:
-  B2TrackerHit();
-  B2TrackerHit(const B2TrackerHit&);
-  virtual ~B2TrackerHit();
+  AEgISTrackerHit();
+  AEgISTrackerHit(const AEgISTrackerHit&);
+  virtual ~AEgISTrackerHit();
 
   // operators
-  const B2TrackerHit& operator=(const B2TrackerHit&);
-  G4bool operator==(const B2TrackerHit&) const;
+  const AEgISTrackerHit& operator=(const AEgISTrackerHit&);
+  G4bool operator==(const AEgISTrackerHit&) const;
 
   inline void* operator new(size_t);
   inline void  operator delete(void*);
@@ -83,23 +83,23 @@ private:
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-typedef G4THitsCollection<B2TrackerHit> B2TrackerHitsCollection;
+typedef G4THitsCollection<AEgISTrackerHit> AEgISTrackerHitsCollection;
 
-extern G4ThreadLocal G4Allocator<B2TrackerHit>* B2TrackerHitAllocator;
+extern G4ThreadLocal G4Allocator<AEgISTrackerHit>* AEgISTrackerHitAllocator;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-inline void* B2TrackerHit::operator new(size_t)
+inline void* AEgISTrackerHit::operator new(size_t)
 {
-  if(!B2TrackerHitAllocator) B2TrackerHitAllocator = new G4Allocator<B2TrackerHit>;
-  return (void *) B2TrackerHitAllocator->MallocSingle();
+  if(!AEgISTrackerHitAllocator) AEgISTrackerHitAllocator = new G4Allocator<AEgISTrackerHit>;
+  return (void *) AEgISTrackerHitAllocator->MallocSingle();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-inline void B2TrackerHit::operator delete(void *hit)
+inline void AEgISTrackerHit::operator delete(void *hit)
 {
-  B2TrackerHitAllocator->FreeSingle((B2TrackerHit*) hit);
+  AEgISTrackerHitAllocator->FreeSingle((AEgISTrackerHit*) hit);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

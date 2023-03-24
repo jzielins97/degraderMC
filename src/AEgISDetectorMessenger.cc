@@ -24,11 +24,11 @@
 // ********************************************************************
 //
 // 
-/// \file B2bDetectorMessenger.cc
-/// \brief Implementation of the B2bDetectorMessenger class
+/// \file AEgISDetectorMessenger.cc
+/// \brief Implementation of the AEgISDetectorMessenger class
 
-#include "B2bDetectorMessenger.hh"
-#include "B2bDetectorConstruction.hh"
+#include "AEgISDetectorMessenger.hh"
+#include "AEgISDetectorConstruction.hh"
 
 #include "G4UIdirectory.hh"
 #include "G4UIcmdWithAString.hh"
@@ -36,12 +36,12 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B2bDetectorMessenger::B2bDetectorMessenger(B2bDetectorConstruction* Det)
+AEgISDetectorMessenger::AEgISDetectorMessenger(AEgISDetectorConstruction* Det)
  : G4UImessenger(),
    fDetectorConstruction(Det)
 {
-  fB2Directory = new G4UIdirectory("/AEgIS/");
-  fB2Directory->SetGuidance("UI commands specific to this project.");
+  fAEgISDirectory = new G4UIdirectory("/AEgIS/");
+  fAEgISDirectory->SetGuidance("UI commands specific to this project.");
 
   fDetDirectory = new G4UIdirectory("/AEgIS/degrader");
   fDetDirectory->SetGuidance("Degraders construction control");
@@ -109,18 +109,18 @@ B2bDetectorMessenger::B2bDetectorMessenger(B2bDetectorConstruction* Det)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B2bDetectorMessenger::~B2bDetectorMessenger()
+AEgISDetectorMessenger::~AEgISDetectorMessenger()
 {
   delete fFirstDegraderThicknessCmd;
   delete fSecondDegraderThicknessCmd;
   delete fStepMaxCmd;
-  delete fB2Directory;
+  delete fAEgISDirectory;
   delete fDetDirectory;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B2bDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
+void AEgISDetectorMessenger::SetNewValue(G4UIcommand* command,G4String newValue)
 {
   if( command == fFirstDegraderThicknessCmd )
    { fDetectorConstruction->SetFirstDegraderThickness(fFirstDegraderThicknessCmd->GetNewDoubleValue(newValue));}

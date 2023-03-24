@@ -24,11 +24,11 @@
 // ********************************************************************
 //
 //
-/// \file B2bChamberParameterisation.hh
-/// \brief Definition of the B2bChamberParameterisation class
+/// \file AEgISChamberParameterisation.hh
+/// \brief Definition of the AEgISChamberParameterisation class
 
-#ifndef B2bChamberParameterisation_h
-#define B2bChamberParameterisation_h 1
+#ifndef AEgISChamberParameterisation_h
+#define AEgISChamberParameterisation_h 1
 
 #include "globals.hh"
 #include "G4VPVParameterisation.hh"
@@ -55,18 +55,18 @@ class G4Polyhedra;
 ///  The boxes have equal width, & their lengths are a linear equation.
 ///  They are spaced an equal distance apart, starting from given location.
 
-class B2bChamberParameterisation : public G4VPVParameterisation
+class AEgISChamberParameterisation : public G4VPVParameterisation
 { 
   public:
   
-    B2bChamberParameterisation(G4int    noChambers, 
+    AEgISChamberParameterisation(G4int    noChambers, 
                               G4double startZ, 
                               G4double spacing,
                               G4double widthChamber, 
                               G4double lengthInitial,
                               G4double lengthFinal );
 
-    virtual ~B2bChamberParameterisation();
+    virtual ~AEgISChamberParameterisation();
    
     void ComputeTransformation (const G4int copyNo,
                                 G4VPhysicalVolume* physVol) const;

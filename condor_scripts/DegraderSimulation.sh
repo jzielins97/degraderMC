@@ -101,7 +101,7 @@ cp $GITPATH/src/bfield.csv $WORKDIR
 echo
 echo "Start time: $(date)"
 
-$GITPATH/build/exampleB2b $FILENAME.in
+$GITPATH/build/degraderSim $FILENAME.in
 
 echo "Stop time: $(date)"
 echo

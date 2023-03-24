@@ -24,18 +24,18 @@
 // ********************************************************************
 //
 //
-/// \file B2bDetectorConstruction.hh
-/// \brief Definition of the B2bDetectorConstruction class
+/// \file AEgISDetectorConstruction.hh
+/// \brief Definition of the AEgISDetectorConstruction class
 
-#ifndef B2bDetectorConstruction_h
-#define B2bDetectorConstruction_h 1
+#ifndef AEgISDetectorConstruction_h
+#define AEgISDetectorConstruction_h 1
 
 #include "globals.hh"
 #include "G4VUserDetectorConstruction.hh"
 #include "tls.hh"
 #include "G4FieldManager.hh"
 
-class B2MagneticField;
+class AEgISMagneticField;
 class G4VPhysicalVolume;
 class G4LogicalVolume;
 class G4Tubs;
@@ -44,16 +44,16 @@ class G4Material;
 class G4UserLimits;
 class G4GlobalMagFieldMessenger;
 
-class B2bDetectorMessenger;
+class AEgISDetectorMessenger;
 
 /// Detector construction class to define materials, geometry
 /// and global uniform magnetic field.
 
-class B2bDetectorConstruction : public G4VUserDetectorConstruction
+class AEgISDetectorConstruction : public G4VUserDetectorConstruction
 {
   public:
-    B2bDetectorConstruction();
-    virtual ~B2bDetectorConstruction();
+    AEgISDetectorConstruction();
+    virtual ~AEgISDetectorConstruction();
 
   public:
     virtual G4VPhysicalVolume* Construct();
@@ -129,11 +129,11 @@ class B2bDetectorConstruction : public G4VUserDetectorConstruction
 
     G4UserLimits*      fStepLimit;       // pointer to user step limits
 
-    B2bDetectorMessenger*  fMessenger;   // detector messenger
+    AEgISDetectorMessenger*  fMessenger;   // detector messenger
     
 // static...
 
-    static G4ThreadLocal B2MagneticField* fMagneticField;
+    static G4ThreadLocal AEgISMagneticField* fMagneticField;
     static G4ThreadLocal G4FieldManager* fFieldMgr;
 //*    static G4ThreadLocal G4GlobalMagFieldMessenger*  fMagFieldMessenger; 
                                          // magnetic field messenger

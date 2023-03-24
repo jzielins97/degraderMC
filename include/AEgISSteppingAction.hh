@@ -24,32 +24,38 @@
 // ********************************************************************
 //
 //
-/// \file B2RunAction.hh
-/// \brief Definition of the B2RunAction class
+/// copy from \file B1SteppingAction.hh
+/// \brief Definition of the AEgISSteppingAction class
 
-#ifndef B2RunAction_h
-#define B2RunAction_h 1
+#ifndef AEgISSteppingAction_h
+#define AEgISSteppingAction_h 1
 
-#include "G4UserRunAction.hh"
-#include "globals.hh"
+#include "G4UserSteppingAction.hh"
 #include "G4AnalysisManager.hh"
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+#include "globals.hh"
 
-class G4Run;
+class AEgISEventAction;
 
-/// Run action class
+class G4LogicalVolume;
+class G4SteppingManager;
 
-class B2RunAction : public G4UserRunAction
+/// Stepping action class
+/// 
+
+class AEgISSteppingAction : public G4UserSteppingAction
 {
-public:
-  B2RunAction();
-  virtual ~B2RunAction();
-  
-  virtual void BeginOfRunAction(const G4Run* run);
-  virtual void   EndOfRunAction(const G4Run* run);
+  public:
+    AEgISSteppingAction(AEgISEventAction* eventAction);
+    virtual ~AEgISSteppingAction();
 
-  
+    // method from the base class
+    virtual void UserSteppingAction(const G4Step*);
+
+  private:
+    AEgISEventAction*  fEventAction;
+    G4LogicalVolume* fScoringVolume;
+    G4SteppingManager* fManager;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

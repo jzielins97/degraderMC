@@ -27,7 +27,7 @@
 /// \file B5MagneticField.cc
 /// \brief Implementation of the B5MagneticField class
 
-#include "B2MagneticField.hh"
+#include "AEgISMagneticField.hh"
 #include "G4FileUtilities.hh"
 #include "G4GenericMessenger.hh"
 #include "G4SystemOfUnits.hh"
@@ -40,7 +40,7 @@ using namespace std;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B2MagneticField::B2MagneticField()
+AEgISMagneticField::AEgISMagneticField()
 : G4MagneticField(), 
   fMessenger(nullptr), fBz(2.5*tesla)
 {
@@ -97,7 +97,7 @@ B2MagneticField::B2MagneticField()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B2MagneticField::~B2MagneticField()
+AEgISMagneticField::~AEgISMagneticField()
 { 
   delete fMessenger; 
 //  delete aegisrB;
@@ -106,7 +106,7 @@ B2MagneticField::~B2MagneticField()
 //  delete aegisbZ;
 }
 
-void B2MagneticField::GetFieldValue(const G4double position[4],G4double *bField) const
+void AEgISMagneticField::GetFieldValue(const G4double position[4],G4double *bField) const
 {
 // =============================================================
 // Return as Bfield[0], [1], [2] the magnetic field x, y & z components
@@ -167,9 +167,9 @@ void B2MagneticField::GetFieldValue(const G4double position[4],G4double *bField)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B2MagneticField::DefineCommands()
+void AEgISMagneticField::DefineCommands()
 {
-  // Define /B2/field command directory using generic messenger class
+  // Define /AEgIS/field command directory using generic messenger class
   fMessenger = new G4GenericMessenger(this,
 				      "/AEgIS/field/",
 				      "Field control");
@@ -177,7 +177,7 @@ void B2MagneticField::DefineCommands()
   // fieldValue command 
   auto& valueCmd = fMessenger->DeclareMethodWithUnit("value",
 						     "tesla",
-						     &B2MagneticField::SetField, 
+						     &AEgISMagneticField::SetField, 
 						     "Set field strength.");
   
   valueCmd.SetParameterName("field", true);

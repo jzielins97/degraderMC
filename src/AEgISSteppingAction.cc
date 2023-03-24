@@ -25,12 +25,12 @@
 //
 //
 /// copy of \file B1SteppingAction.cc
-/// \brief Implementation of the B2SteppingAction class
+/// \brief Implementation of the AEgISSteppingAction class
 
-#include "B2SteppingAction.hh"
-#include "B2EventAction.hh"
-#include "B2bDetectorConstruction.hh"
-#include "B2MagneticField.hh"
+#include "AEgISSteppingAction.hh"
+#include "AEgISEventAction.hh"
+#include "AEgISDetectorConstruction.hh"
+#include "AEgISMagneticField.hh"
 
 #include "G4Tubs.hh"
 #include "G4Step.hh"    //  from track/src
@@ -48,7 +48,7 @@ class G4VProcess;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B2SteppingAction::B2SteppingAction(B2EventAction* eventAction)
+AEgISSteppingAction::AEgISSteppingAction(AEgISEventAction* eventAction)
 : G4UserSteppingAction(),
   fEventAction(eventAction),
   fScoringVolume(0)
@@ -56,11 +56,11 @@ B2SteppingAction::B2SteppingAction(B2EventAction* eventAction)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B2SteppingAction::~B2SteppingAction() {}
+AEgISSteppingAction::~AEgISSteppingAction() {}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B2SteppingAction::UserSteppingAction(const G4Step* step)
+void AEgISSteppingAction::UserSteppingAction(const G4Step* step)
 {
   G4ParticleDefinition* particleType = step->GetTrack()->GetDefinition();
   // G4cout << "++++++++++++ Step output ++++++++++"<< G4endl

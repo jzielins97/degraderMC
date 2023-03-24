@@ -24,40 +24,66 @@
 // ********************************************************************
 //
 //
-/// copy from \file B1SteppingAction.hh
-/// \brief Definition of the B2SteppingAction class
+/// \file AEgISRunAction.cc
+/// \brief Implementation of the AEgISRunAction class
 
-#ifndef B2SteppingAction_h
-#define B2SteppingAction_h 1
+#include "AEgISRunAction.hh"
 
-#include "G4UserSteppingAction.hh"
-#include "G4AnalysisManager.hh"
-
-#include "globals.hh"
-
-class B2EventAction;
-
-class G4LogicalVolume;
-class G4SteppingManager;
-
-/// Stepping action class
-/// 
-
-class B2SteppingAction : public G4UserSteppingAction
-{
-  public:
-    B2SteppingAction(B2EventAction* eventAction);
-    virtual ~B2SteppingAction();
-
-    // method from the base class
-    virtual void UserSteppingAction(const G4Step*);
-
-  private:
-    B2EventAction*  fEventAction;
-    G4LogicalVolume* fScoringVolume;
-    G4SteppingManager* fManager;
-};
+#include "G4Run.hh"
+#include "G4RunManager.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#endif
+AEgISRunAction::AEgISRunAction()
+ : G4UserRunAction()
+{ 
+  // set printing event number per each 100 events
+  G4RunManager::GetRunManager()->SetPrintProgress(1000);
+  auto man = G4AnalysisManager::Instance();
+  man->SetNtupleMerging(true);
+
+  man->SetFirstNtupleId(1);
+
+  man->CreateNtuple("fPosition","Antiproton Position in mm");
+  man->CreateNtupleDColumn("x_mm");
+  man->CreateNtupleDColumn("y_mm");
+  man->CreateNtupleDColumn("z_mm");
+  man->FinishNtuple();
+
+  man->CreateNtuple("fMomentum","Antiproton Momentum in keV");
+  man->CreateNtupleDColumn("px_keV");
+  man->CreateNtupleDColumn("py_keV");
+  man->CreateNtupleDColumn("pz_keV");
+  man->CreateNtupleDColumn("kineticEnergy_keV");
+  man->FinishNtuple();
+
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+AEgISRunAction::~AEgISRunAction()
+{}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void AEgISRunAction::BeginOfRunAction(const G4Run*)
+{ 
+  //inform the runManager to save random number seed
+  G4RunManager::GetRunManager()->SetRandomNumberStore(false);
+  auto man = G4AnalysisManager::Instance();
+
+  G4String filename = "man_output.root";
+  man->OpenFile(filename);
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void AEgISRunAction::EndOfRunAction(const G4Run *)
+{
+  auto man = G4AnalysisManager::Instance();
+
+  man->Write();
+  man->CloseFile();
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

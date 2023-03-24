@@ -24,57 +24,34 @@
 // ********************************************************************
 //
 //
-/// \file B2EventAction.cc
-/// \brief Implementation of the B2EventAction class
+/// \file AEgISRunAction.hh
+/// \brief Definition of the AEgISRunAction class
 
-#include "B2EventAction.hh"
+#ifndef AEgISRunAction_h
+#define AEgISRunAction_h 1
 
-#include "G4Event.hh"
-#include "G4EventManager.hh"
-#include "G4TrajectoryContainer.hh"
-#include "G4Trajectory.hh"
-#include "G4ios.hh"
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-B2EventAction::B2EventAction(B2RunAction* runAction)
-: G4UserEventAction(),
-  fRunAction(runAction)
-{}
+#include "G4UserRunAction.hh"
+#include "globals.hh"
+#include "G4AnalysisManager.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B2EventAction::~B2EventAction()
-{}
+class G4Run;
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+/// Run action class
 
-void B2EventAction::BeginOfEventAction(const G4Event*)
-{}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void B2EventAction::EndOfEventAction(const G4Event* event)
+class AEgISRunAction : public G4UserRunAction
 {
-  // get number of stored trajectories
+public:
+  AEgISRunAction();
+  virtual ~AEgISRunAction();
+  
+  virtual void BeginOfRunAction(const G4Run* run);
+  virtual void   EndOfRunAction(const G4Run* run);
 
-  G4TrajectoryContainer* trajectoryContainer = event->GetTrajectoryContainer();
-  G4int n_trajectories = 0;
-  if (trajectoryContainer) n_trajectories = trajectoryContainer->entries();
-
-  // periodic printing
-
-  G4int eventID = event->GetEventID();
-  if ( eventID < 100 || eventID % 1000 == 0) {
-    G4cout << ">>> Event: " << eventID  << G4endl;
-    if ( trajectoryContainer ) {
-      G4cout << "    " << n_trajectories
-             << " trajectories stored in this event." << G4endl;
-    }
-//    G4VHitsCollection* hc = event->GetHCofThisEvent()->GetHC(0);
-//    G4cout << "    "  
-//           << hc->GetSize() << " hits stored in this event" << G4endl;
-  }
-}  
+  
+};
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+#endif

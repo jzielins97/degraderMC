@@ -24,47 +24,95 @@
 // ********************************************************************
 //
 //
-/// \file B2ActionInitialization.cc
-/// \brief Implementation of the B2ActionInitialization class
+/// \file AEgISTrackerHit.cc
+/// \brief Implementation of the AEgISTrackerHit class
 
-#include "B2ActionInitialization.hh"
-#include "B2PrimaryGeneratorAction.hh"
-#include "B2RunAction.hh"
-#include "B2EventAction.hh"
-#include "B2SteppingAction.hh"
+#include "AEgISTrackerHit.hh"
+#include "G4UnitsTable.hh"
+#include "G4VVisManager.hh"
+#include "G4Circle.hh"
+#include "G4Colour.hh"
+#include "G4VisAttributes.hh"
+
+#include <iomanip>
+
+G4ThreadLocal G4Allocator<AEgISTrackerHit>* AEgISTrackerHitAllocator=0;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B2ActionInitialization::B2ActionInitialization()
- : G4VUserActionInitialization()
+AEgISTrackerHit::AEgISTrackerHit():
+  G4VHit(),
+  fTrackID(-1),
+  fPos(G4ThreeVector()),
+  fMomentum(G4ThreeVector()),
+  fMomentumDirection(G4ThreeVector())
 {}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-B2ActionInitialization::~B2ActionInitialization()
-{}
+AEgISTrackerHit::~AEgISTrackerHit() {}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B2ActionInitialization::BuildForMaster() const
+AEgISTrackerHit::AEgISTrackerHit(const AEgISTrackerHit& right)
+  : G4VHit()
 {
-  SetUserAction(new B2RunAction);
+  fTrackID   = right.fTrackID;
+  fPos       = right.fPos;
+  fMomentum  = right.fMomentum;
+  fMomentumDirection = right.fMomentumDirection;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B2ActionInitialization::Build() const
+const AEgISTrackerHit& AEgISTrackerHit::operator=(const AEgISTrackerHit& right)
 {
-  SetUserAction(new B2PrimaryGeneratorAction);
+  fTrackID   = right.fTrackID;
+  fPos       = right.fPos;
+  fMomentum  = right.fMomentum;
+  fMomentumDirection = right.fMomentumDirection;
+  
+  return *this;
+}
 
-  B2RunAction* runAction = new B2RunAction;
-  SetUserAction(runAction);
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-  B2EventAction* eventAction = new B2EventAction(runAction);
-  SetUserAction(eventAction);
+G4bool AEgISTrackerHit::operator==(const AEgISTrackerHit& right) const
+{
+  return ( this == &right ) ? true : false;
+}
 
-  SetUserAction(new B2SteppingAction(eventAction));
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-}  
+void AEgISTrackerHit::Draw()
+{
+  G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
+  if(pVVisManager)
+  {
+    G4Circle circle(fPos);
+    circle.SetScreenSize(4.);
+    circle.SetFillStyle(G4Circle::filled);
+    G4Colour colour(1.,0.,0.);
+    G4VisAttributes attribs(colour);
+    circle.SetVisAttributes(attribs);
+    pVVisManager->Draw(circle);
+  }
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void AEgISTrackerHit::Print()
+{
+  G4cout
+     << "  trackID: " << fTrackID
+     << " Position: "
+     << std::setw(7) << G4BestUnit( fPos,"Length")
+     << " Momentum: "
+     << std::setw(7) << G4BestUnit( fMomentum,"Energy")
+     << " Momentum Direction: "
+     << std::setw(7) << fMomentumDirection
+     
+     << G4endl;
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

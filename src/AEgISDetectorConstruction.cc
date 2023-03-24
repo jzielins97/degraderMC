@@ -24,14 +24,14 @@
 // ********************************************************************
 //
 //
-/// \file B2bDetectorConstruction.cc
-/// \brief Implementation of the B2bDetectorConstruction class
+/// \file AEgISDetectorConstruction.cc
+/// \brief Implementation of the AEgISDetectorConstruction class
  
-#include "B2bDetectorConstruction.hh"
-#include "B2MagneticField.hh"
-#include "B2bDetectorMessenger.hh"
-#include "B2bChamberParameterisation.hh"
-#include "B2TrackerSD.hh"
+#include "AEgISDetectorConstruction.hh"
+#include "AEgISMagneticField.hh"
+#include "AEgISDetectorMessenger.hh"
+#include "AEgISChamberParameterisation.hh"
+#include "AEgISTrackerSD.hh"
 
 // BBBBBBBBBBBBBBBBBBb
 #include "G4FieldManager.hh"
@@ -72,13 +72,13 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 // BBBBBBBBBBBBBBBBBBBBBB
-//*G4ThreadLocal G4GlobalMagFieldMessenger* B2bDetectorConstruction::fMagFieldMessenger = 0;
-G4ThreadLocal B2MagneticField* B2bDetectorConstruction::fMagneticField = 0;
-G4ThreadLocal G4FieldManager* B2bDetectorConstruction::fFieldMgr = 0;
+//*G4ThreadLocal G4GlobalMagFieldMessenger* AEgISDetectorConstruction::fMagFieldMessenger = 0;
+G4ThreadLocal AEgISMagneticField* AEgISDetectorConstruction::fMagneticField = 0;
+G4ThreadLocal G4FieldManager* AEgISDetectorConstruction::fFieldMgr = 0;
 // BBBBBBBBBBBBBBBBBBBBBB
 
 
-B2bDetectorConstruction::B2bDetectorConstruction():
+AEgISDetectorConstruction::AEgISDetectorConstruction():
   G4VUserDetectorConstruction(),
   fWorldLV(NULL),
   fFirstDegraderLV(NULL),fFirstMetalizationLV(NULL),
@@ -88,7 +88,7 @@ B2bDetectorConstruction::B2bDetectorConstruction():
   fSecondDegraderMaterial(NULL),fSecondMetalizationMaterial(NULL),
   fCheckOverlaps(true)
 {
-  fMessenger = new B2bDetectorMessenger(this);
+  fMessenger = new AEgISDetectorMessenger(this);
   fFirstDegraderThickness = 100 * nm;
   fSecondDegraderThickness = 100 * nm;
 
@@ -99,7 +99,7 @@ B2bDetectorConstruction::B2bDetectorConstruction():
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
  
-B2bDetectorConstruction::~B2bDetectorConstruction()
+AEgISDetectorConstruction::~AEgISDetectorConstruction()
 {
   delete fStepLimit;
   delete fMessenger;
@@ -109,7 +109,7 @@ B2bDetectorConstruction::~B2bDetectorConstruction()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
  
-G4VPhysicalVolume* B2bDetectorConstruction::Construct()
+G4VPhysicalVolume* AEgISDetectorConstruction::Construct()
 {
   DefineMaterials();
   return DefineVolumes();
@@ -117,7 +117,7 @@ G4VPhysicalVolume* B2bDetectorConstruction::Construct()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B2bDetectorConstruction::DefineMaterials()
+void AEgISDetectorConstruction::DefineMaterials()
 {
   // Material definition 
 
@@ -150,7 +150,7 @@ void B2bDetectorConstruction::DefineMaterials()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
+G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
 {
   G4cout<<"++++++ definition of the geometry ++++++"<<G4endl;
   // Sizes of the principal geometrical components (solids)
@@ -568,12 +568,12 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
  
-void B2bDetectorConstruction::ConstructSDandField()
+void AEgISDetectorConstruction::ConstructSDandField()
 {
   // Sensitive detectors
 
-  // G4String trackerChamberSDname = "B2/TrackerChamberSD";
-  B2TrackerSD* dumpDetector = new B2TrackerSD("AntiprotonDetector", "AntiprotonHitsCollection");
+  // G4String trackerChamberSDname = "AEgIS/TrackerChamberSD";
+  AEgISTrackerSD* dumpDetector = new AEgISTrackerSD("AntiprotonDetector", "AntiprotonHitsCollection");
   fDetectorLV->SetSensitiveDetector(dumpDetector);
   
   // Create global magnetic field messenger.
@@ -581,7 +581,7 @@ void B2bDetectorConstruction::ConstructSDandField()
   // the field value is not zero.
   
   // magnetic field ----------------------------------------------------------
-  fMagneticField = new B2MagneticField();
+  fMagneticField = new AEgISMagneticField();
   fFieldMgr = new G4FieldManager();
   fFieldMgr->SetDetectorField(fMagneticField);
   fFieldMgr->CreateChordFinder(fMagneticField);
@@ -594,7 +594,7 @@ void B2bDetectorConstruction::ConstructSDandField()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B2bDetectorConstruction::SetFirstDegraderThickness(G4double size)
+void AEgISDetectorConstruction::SetFirstDegraderThickness(G4double size)
 {
   fFirstDegraderThickness = size;
   // Construct();
@@ -603,7 +603,7 @@ void B2bDetectorConstruction::SetFirstDegraderThickness(G4double size)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B2bDetectorConstruction::SetSecondDegraderThickness(G4double size)
+void AEgISDetectorConstruction::SetSecondDegraderThickness(G4double size)
 {
   fSecondDegraderThickness = size;
   // Construct();
@@ -612,7 +612,7 @@ void B2bDetectorConstruction::SetSecondDegraderThickness(G4double size)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B2bDetectorConstruction::SetFirstMetalizationThickness(G4double size)
+void AEgISDetectorConstruction::SetFirstMetalizationThickness(G4double size)
 {
   fFirstMetalizationThickness = size;
   // Construct();
@@ -621,7 +621,7 @@ void B2bDetectorConstruction::SetFirstMetalizationThickness(G4double size)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B2bDetectorConstruction::SetSecondMetalizationThickness(G4double size)
+void AEgISDetectorConstruction::SetSecondMetalizationThickness(G4double size)
 {
   fSecondMetalizationThickness = size;
   // Construct();
@@ -630,7 +630,7 @@ void B2bDetectorConstruction::SetSecondMetalizationThickness(G4double size)
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
  
-void B2bDetectorConstruction::SetMaxStep(G4double maxStep)
+void AEgISDetectorConstruction::SetMaxStep(G4double maxStep)
 {
   if ((fStepLimit)&&(maxStep>0.)) fStepLimit->SetMaxAllowedStep(maxStep);
 }
@@ -638,7 +638,7 @@ void B2bDetectorConstruction::SetMaxStep(G4double maxStep)
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 // General function for changing material of specified Logical Volume
-G4Material* B2bDetectorConstruction::SetMaterial(G4LogicalVolume* fGeneralLV, G4String materialName)
+G4Material* AEgISDetectorConstruction::SetMaterial(G4LogicalVolume* fGeneralLV, G4String materialName)
 {
   G4NistManager* nistManager = G4NistManager::Instance();
   if(G4StrUtil::contains(materialName, "PARYLENE")) materialName = "G4_NAPHTHALENE";
@@ -662,35 +662,35 @@ G4Material* B2bDetectorConstruction::SetMaterial(G4LogicalVolume* fGeneralLV, G4
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B2bDetectorConstruction::SetFirstDegraderMaterial(G4String materialName)
+void AEgISDetectorConstruction::SetFirstDegraderMaterial(G4String materialName)
 {
   fFirstDegraderMaterial = SetMaterial(fFirstDegraderLV, materialName);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B2bDetectorConstruction::SetSecondDegraderMaterial(G4String materialName)
+void AEgISDetectorConstruction::SetSecondDegraderMaterial(G4String materialName)
 {
   fSecondDegraderMaterial = SetMaterial(fSecondDegraderLV, materialName);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B2bDetectorConstruction::SetFirstMetalizationMaterial(G4String materialName)
+void AEgISDetectorConstruction::SetFirstMetalizationMaterial(G4String materialName)
 {
   fFirstMetalizationMaterial = SetMaterial(fFirstMetalizationLV, materialName);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B2bDetectorConstruction::SetSecondMetalizationMaterial(G4String materialName)
+void AEgISDetectorConstruction::SetSecondMetalizationMaterial(G4String materialName)
 {
   fSecondMetalizationMaterial = SetMaterial(fSecondMetalizationLV,  materialName);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B2bDetectorConstruction::SetMagneticField(G4bool state)
+void AEgISDetectorConstruction::SetMagneticField(G4bool state)
 {
   fBFieldOn = state;
   if(fMagneticLV){

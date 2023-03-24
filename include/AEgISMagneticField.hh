@@ -27,8 +27,8 @@
 /// \file B5MagneticField.hh
 /// \brief Definition of the B5MagneticField class
 
-#ifndef B2MagneticField_H
-#define B2MagneticField_H 1
+#ifndef AEgISMagneticField_H
+#define AEgISMagneticField_H 1
 
 #include "globals.hh"
 #include "G4MagneticField.hh"
@@ -37,11 +37,11 @@ class G4GenericMessenger;
 
 /// Magnetic field
 
-class B2MagneticField : public G4MagneticField
+class AEgISMagneticField : public G4MagneticField
 {
   public:
-    B2MagneticField();
-    virtual ~B2MagneticField();
+    AEgISMagneticField();
+    virtual ~AEgISMagneticField();
     
     virtual void GetFieldValue(const G4double point[4], G4double* bField ) const;
     
