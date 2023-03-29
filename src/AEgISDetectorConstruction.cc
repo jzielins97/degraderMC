@@ -30,7 +30,6 @@
 #include "AEgISDetectorConstruction.hh"
 #include "AEgISMagneticField.hh"
 #include "AEgISDetectorMessenger.hh"
-#include "AEgISChamberParameterisation.hh"
 #include "AEgISTrackerSD.hh"
 
 // BBBBBBBBBBBBBBBBBBb
@@ -156,27 +155,27 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
   // Sizes of the principal geometrical components (solids)
 // ==========================================================
   // beam tube for antiproton transport
-  G4double beamtubeRadius = 10 * cm;
-  G4double beamtubeLength = 216*cm;
+  G4double magneticRadius = 10 * cm;
+  G4double magneticLength = 150*cm;
   
   // radius for the foils
   G4double foilRadius = 7.5 * cm;
 
   // antiproton dump (Au)
-  G4double dumpRadius = 1.2*beamtubeRadius;
+  G4double dumpRadius = 1.2*magneticRadius;
 
   // distance between foils
   G4double foilGap = 10*cm;
 
   // steps
   G4double maxFoilStep = 50*nm;
-  G4double maxFieldStep = beamtubeLength/5;
+  G4double maxFieldStep = magneticLength/10;
   G4double maxMetalizationStep = 5 * nm;
 
 // ==========================================================
 
   // G4double worldLength = foilGap/2 + foilMetalizationLength + fFirstDegraderThickness + foilGap + fSecondDegraderThickness + foilMetalizationLength + foilGap + dumpLength;
-  G4double worldLength = 1.1 * (foilGap/2 + fFirstMetalizationThickness + fFirstDegraderThickness + 2*foilGap + beamtubeLength  + foilGap/2);
+  G4double worldLength = 1.1 * (foilGap/2 + magneticLength  + foilGap/2);
   G4double dumpLength = 0.01*worldLength;
   
   // Definitions of Solids, Logical Volumes, Physical Volumes
@@ -217,101 +216,17 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
 			       0,               // copy number
 			       fCheckOverlaps); // checking overlaps
   
-  // G4ThreeVector positionFirstDegrader = G4ThreeVector(0,0,-worldLength/2 + dumpLength + foilGap/4 + fFirstMetalizationThickness + fFirstDegraderThickness/2);
-  G4ThreeVector positionFirstDegrader = G4ThreeVector(0,0,-worldLength/2/1.1 + foilGap/2 + fFirstMetalizationThickness + fFirstDegraderThickness/2);
-  if(fFirstDegraderThickness > 0){ // only place thin degrader if its thickness is more than 0
-    // this degrader has a metalization layer:
-    // *********************************************************
-    // ===== First degrader metalization layer (downstream) ====
-    // *********************************************************
-  
-    G4ThreeVector positionFirstMetalization = positionFirstDegrader - G4ThreeVector(0,0,fFirstDegraderThickness/2 + fFirstMetalizationThickness/2);
-    G4cout << "Metalization of the first foils is placed at " << positionFirstMetalization << G4endl;
 
-    fFirstMetalizationS = new G4Tubs("firstMetalization",
-				     0.,
-				     foilRadius,
-				     fFirstMetalizationThickness/2,
-				     0.*deg,
-				     360.*deg);
-  
-    fFirstMetalizationLV = new G4LogicalVolume(fFirstMetalizationS,
-					       fFirstMetalizationMaterial,
-					       "FirstMetalizationLV",
-					       0,
-					       0,
-					       0);
-  
-    fFirstMetalizationPV = new G4PVPlacement(0,                // no rotation
-					     positionFirstMetalization, // at (x,y,z)
-					     fFirstMetalizationLV,   // its logical volume
-					     "FirstMetalization",       // its name
-					     fWorldLV,   // its mother volume
-					     false,            // no boolean operations
-					     0,                // copy number
-					     fCheckOverlaps);  // checking overlaps 
-
-    // --------------------------------------------------------
-    // tiny steps in the trace lines (made of Au) ...
-    // ---------------------------------------------------------
-    fFirstMetalizationLV->SetUserLimits(new G4UserLimits(maxMetalizationStep));
-
-    G4cout << "    Metalization of the first foil is " << fFirstMetalizationThickness/nm << " nm of " << fFirstMetalizationMaterial->GetName() << G4endl;
-
-    // *********************************************************
-    // ============== First degrader foil    ===================
-    // *********************************************************
-
-
-    
-    G4cout << "First degrader foil is placed at " << positionFirstDegrader << G4endl;
-
-    fFirstDegraderS = new G4Tubs("firstDegrader",
-				 0.,
-				 foilRadius,
-				 fFirstDegraderThickness/2,
-				 0.*deg,
-				 360.*deg);
-  
-    fFirstDegraderLV = new G4LogicalVolume(fFirstDegraderS,
-					   fFirstDegraderMaterial,
-					   "FirstDegraderLV",
-					   0,
-					   0,
-					   0);
-  
-    fFirstDegraderPV = new G4PVPlacement(0,              // no rotation
-					 positionFirstDegrader,// at (x,y,z)
-					 fFirstDegraderLV,   // its logical volume
-					 "FirstDegrader",       // its name
-					 fWorldLV, // its mother volume
-					 false,          // no boolean operations
-					 0,              // copy number
-					 fCheckOverlaps); // checking overlaps 
-
-    // --------------------------------------------------
-    // tiny steps in the degrader foil ...
-    // Sets a max step length in the "target" region, with G4StepLimiter, of 50 nm
-    // --------------------------------------------------    
-    fStepLimit = new G4UserLimits(maxFoilStep);
-    fFirstDegraderLV->SetUserLimits(fStepLimit);
-
-    G4cout << "    First degrader foil is " << fFirstDegraderThickness/nm << " nm of " << fFirstDegraderMaterial->GetName() << G4endl;
-
-  }else{ // only place thin degrader if its thickness is more than 0
-    fFirstDegraderLV = NULL;
-    fFirstMetalizationLV = NULL;
-  }
-  
   // *********************************************************
   // =================== Beam tube =========================
   // *********************************************************
 
   
-   G4ThreeVector positionBeamTube = positionFirstDegrader + G4ThreeVector(0,0,fFirstDegraderThickness/2 + 2*foilGap + beamtubeLength/2);
-   // G4ThreeVector positionBeamTube = G4ThreeVector(0,0,-beamtubeLength);
+   G4ThreeVector positionBeamTube = G4ThreeVector(0,0,0);
+   // G4ThreeVector positionBeamTube = G4ThreeVector(0,0,-magneticLength);
    G4cout << "Magnetic tube is placed at " << positionBeamTube << G4endl;
-   G4cout << "  From "<<positionBeamTube[2] - beamtubeLength/2<<" to "<<positionBeamTube[2] + beamtubeLength/2<<G4endl;
+   G4cout << "  From "<<positionBeamTube[2] - magneticLength/2<<" to "<<positionBeamTube[2] + magneticLength/2<<G4endl;
+   fMagneticFieldStart = positionBeamTube[2] - magneticLength/2;
   
    // BBBBBBBBBBBBBBBB overlapping magnetic field region BBBBBBBBBBBBBB
   
@@ -319,8 +234,8 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
   
    fMagneticS = new G4Tubs("magneticTubs",
 			   0.,
-			   beamtubeRadius,
-			   beamtubeLength/2,
+			   magneticRadius,
+			   magneticLength/2,
 			   0.,
 			   360.*deg);
   
@@ -345,11 +260,101 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
 
   // BBBBBBBBBBBBBBBB
 
+  if(fFirstDegraderThickness > 0){ // only place thin degrader if its thickness is more than 0
+    // this degrader has a metalization layer:
+    // *********************************************************
+    // ===== First degrader metalization layer (downstream) ====
+    // *********************************************************
+
+    // magnetic field starts 250 cm from the center of the experiment
+    // first foil is positioned at 170 cm from the center
+    // so it is 250 - 170 = 80 cm from the beginning of the magnetic field
+    G4ThreeVector positionFirstMetalization = G4ThreeVector(0,0, -magneticLength/2 + 80*cm + fFirstMetalizationThickness/2);
+    G4cout << "Metalization of the first foils is placed at " << positionFirstMetalization << G4endl;
+    
+    fFirstMetalizationS = new G4Tubs("firstMetalization",
+				     0.,
+				     foilRadius,
+				     fFirstMetalizationThickness/2,
+				     0.*deg,
+				     360.*deg);
+    
+    fFirstMetalizationLV = new G4LogicalVolume(fFirstMetalizationS,
+					       fFirstMetalizationMaterial,
+					       "FirstMetalizationLV",
+					       0,
+					       0,
+					       0);
+  
+    fFirstMetalizationPV = new G4PVPlacement(0,                // no rotation
+					     positionFirstMetalization, // at (x,y,z)
+					     fFirstMetalizationLV,   // its logical volume
+					     "FirstMetalization",       // its name
+					     fMagneticLV,   // its mother volume
+					     false,            // no boolean operations
+					     0,                // copy number
+					     fCheckOverlaps);  // checking overlaps 
+
+    // --------------------------------------------------------
+    // tiny steps in the trace lines (made of Au) ...
+    // ---------------------------------------------------------
+    fFirstMetalizationLV->SetUserLimits(new G4UserLimits(maxMetalizationStep));
+    
+    G4cout << "    Metalization of the first foil is " << fFirstMetalizationThickness/nm << " nm of " << fFirstMetalizationMaterial->GetName() << G4endl;
+    
+    // *********************************************************
+    // ============== First degrader foil    ===================
+    // *********************************************************
+
+
+    G4ThreeVector positionFirstDegrader = positionFirstMetalization + G4ThreeVector(0,0, fFirstMetalizationThickness/2 + fFirstDegraderThickness/2);
+    G4cout << "First degrader foil is placed at " << positionFirstDegrader << G4endl;
+
+    fFirstDegraderS = new G4Tubs("firstDegrader",
+				 0.,
+				 foilRadius,
+				 fFirstDegraderThickness/2,
+				 0.*deg,
+				 360.*deg);
+  
+    fFirstDegraderLV = new G4LogicalVolume(fFirstDegraderS,
+					   fFirstDegraderMaterial,
+					   "FirstDegraderLV",
+					   0,
+					   0,
+					   0);
+  
+    fFirstDegraderPV = new G4PVPlacement(0,              // no rotation
+					 positionFirstDegrader,// at (x,y,z)
+					 fFirstDegraderLV,   // its logical volume
+					 "FirstDegrader",       // its name
+					 fMagneticLV, // its mother volume
+					 false,          // no boolean operations
+					 0,              // copy number
+					 fCheckOverlaps); // checking overlaps 
+
+    // --------------------------------------------------
+    // tiny steps in the degrader foil ...
+    // Sets a max step length in the "target" region, with G4StepLimiter, of 50 nm
+    // --------------------------------------------------    
+    fStepLimit = new G4UserLimits(maxFoilStep);
+    fFirstDegraderLV->SetUserLimits(fStepLimit);
+    
+    G4cout << "    First degrader foil is " << fFirstDegraderThickness/nm << " nm of " << fFirstDegraderMaterial->GetName() << G4endl;
+    
+  }else{ // only place thin degrader if its thickness is more than 0
+    fFirstDegraderLV = NULL;
+    fFirstMetalizationLV = NULL;
+  }
+  
+  
   // *********************************************************
   // Second Degrader foil (in magnetic field)
   // *********************************************************
-  G4ThreeVector positionSecondDegrader = G4ThreeVector(0,0,(111.4*cm - beamtubeLength/2));
-  // G4ThreeVector positionSecondDegrader = positionFirstDegrader + G4ThreeVector(0,0,fFirstDegraderThickness/2 + foilGap + fSecondDegraderThickness/2);
+  // main degrader is placed 111.9 cm from the center of the experiment
+  // so it is 250 - 111.9 = 138.1 cm from beginning of the magnetic field
+  G4ThreeVector positionSecondDegrader(0,0,-magneticLength/2 + 138.1 * cm + fSecondDegraderThickness/2);
+  // G4threevector positionSecondDegrader = positionFirstDegrader + G4ThreeVector(0,0,fFirstDegraderThickness/2 + foilGap + fSecondDegraderThickness/2);
   G4cout << "Second degrader foil is placed at " << positionBeamTube + positionSecondDegrader << G4endl;
   
   fSecondDegraderS = new G4Tubs("secondDegrader",
@@ -432,7 +437,7 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
   // ======= DETECTOR   ===========
   // *********************************************************
   
-  G4ThreeVector positionDetector = positionSecondDegrader + G4ThreeVector(0,0, fSecondDegraderThickness/2 + 3*fSecondMetalizationThickness/2);
+  G4ThreeVector positionDetector = positionSecondMetalization + G4ThreeVector(0,0, fSecondMetalizationThickness/2 + 2.5*nm);
   G4cout << " Detector is placed at " << positionDetector << G4endl;
 
 
@@ -470,7 +475,6 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
 // =======   particles dump  =========================
 // *********************************************************
   
-  // G4ThreeVector positionDump = positionSecondMetalization + G4ThreeVector(0,0,foilMetalizationLength/2 + foilGap + dumpLength/2);
   G4ThreeVector positionDump = G4ThreeVector(0,0,worldLength/2 - dumpLength/2);
   
   G4cout << " Dump is placed at " << positionDump << G4endl;
@@ -581,7 +585,7 @@ void AEgISDetectorConstruction::ConstructSDandField()
   // the field value is not zero.
   
   // magnetic field ----------------------------------------------------------
-  fMagneticField = new AEgISMagneticField();
+  fMagneticField = new AEgISMagneticField(fMagneticFieldStart);
   fFieldMgr = new G4FieldManager();
   fFieldMgr->SetDetectorField(fMagneticField);
   fFieldMgr->CreateChordFinder(fMagneticField);

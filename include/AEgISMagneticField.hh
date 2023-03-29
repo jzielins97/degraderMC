@@ -40,26 +40,21 @@ class G4GenericMessenger;
 class AEgISMagneticField : public G4MagneticField
 {
   public:
-    AEgISMagneticField();
+    AEgISMagneticField(G4double);
     virtual ~AEgISMagneticField();
     
     virtual void GetFieldValue(const G4double point[4], G4double* bField ) const;
-    
-    void SetField(G4double val) { fBz = val; }
-    G4double GetField() const { return fBz; }
-    
+        
   private:
-    void DefineCommands();
-
     G4GenericMessenger* fMessenger;
-    G4double fBz;
+    G4double fMagneticFieldStart; // first Z value with the magnetic field
 
 //    G4double rB[6], zB[6], bR[6], bZ[6];
     G4double aegisrB[65592];
     G4double aegiszB[65592];
     G4double aegisbR[65592];
     G4double aegisbZ[65592];
-    G4int     aegisbGranularity;
+    G4int    aegisbGranularity;
 
 };
 
