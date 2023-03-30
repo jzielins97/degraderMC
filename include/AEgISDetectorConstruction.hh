@@ -34,6 +34,7 @@
 #include "G4VUserDetectorConstruction.hh"
 #include "tls.hh"
 #include "G4FieldManager.hh"
+#include "G4ThreeVector.hh"
 
 class AEgISMagneticField;
 class G4VPhysicalVolume;
@@ -74,6 +75,7 @@ class AEgISDetectorConstruction : public G4VUserDetectorConstruction
 
   private:
     // methods
+    void AddDetector(G4ThreeVector position, G4LogicalVolume* motherLV, G4int detectorID);
     void DefineMaterials();
     G4VPhysicalVolume* DefineVolumes();
     G4Material* SetMaterial(G4LogicalVolume*, G4String);
@@ -85,7 +87,7 @@ class AEgISDetectorConstruction : public G4VUserDetectorConstruction
     G4LogicalVolume*   fSecondDegraderLV;   // pointer to the logical Second Degrader (in magnetic field)
     G4LogicalVolume*   fSecondMetalizationLV;  // pointer to the logical metalization of the Second Degrader
     G4LogicalVolume*   fDumpLV;   // pointer to the logical (Au) "Detector" layer
-    G4LogicalVolume*   fDetectorLV;   // pointer to the logical detector
+    G4LogicalVolume*   fDetectorLV[7];   // pointer to the logical detector
     G4LogicalVolume*   fMagneticLV; // pointer to the logical magnetic volume (=beamtube)
 
     G4Material*        fWorldMaterial;   // pointer to the world material
@@ -105,7 +107,7 @@ class AEgISDetectorConstruction : public G4VUserDetectorConstruction
     G4Tubs* fDumpTubeS;
     G4Tubs* fDumpCapS;
     G4VSolid* fDumpS;
-    G4Tubs* fDetectorS;
+    G4Tubs* fDetectorS[7];
     G4Tubs* fMagneticS;
    
 
@@ -116,7 +118,7 @@ class AEgISDetectorConstruction : public G4VUserDetectorConstruction
     G4VPhysicalVolume* fSecondDegraderPV;
     G4VPhysicalVolume* fSecondMetalizationPV;
     G4VPhysicalVolume* fDumpPV;
-    G4VPhysicalVolume* fDetectorPV;
+    G4VPhysicalVolume* fDetectorPV[7];
     G4VPhysicalVolume* fMagneticPV;
 
     G4bool             fBFieldOn = true;
@@ -136,8 +138,6 @@ class AEgISDetectorConstruction : public G4VUserDetectorConstruction
 
     static G4ThreadLocal AEgISMagneticField* fMagneticField;
     static G4ThreadLocal G4FieldManager* fFieldMgr;
-//*    static G4ThreadLocal G4GlobalMagFieldMessenger*  fMagFieldMessenger; 
-                                         // magnetic field messenger
     
     G4bool  fCheckOverlaps; // option to activate checking of volumes overlaps 
 };

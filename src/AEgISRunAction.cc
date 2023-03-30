@@ -42,19 +42,83 @@ AEgISRunAction::AEgISRunAction()
   auto man = G4AnalysisManager::Instance();
   man->SetNtupleMerging(true);
 
-  man->SetFirstNtupleId(1);
+  man->SetFirstNtupleId(0);
 
-  man->CreateNtuple("fPosition","Antiproton Position in mm");
+  man->CreateNtuple("fFoil1Backward","Antiprotons Reflected from Foil 1");
   man->CreateNtupleDColumn("x_mm");
   man->CreateNtupleDColumn("y_mm");
   man->CreateNtupleDColumn("z_mm");
-  man->FinishNtuple();
-
-  man->CreateNtuple("fMomentum","Antiproton Momentum in keV");
   man->CreateNtupleDColumn("px_keV");
   man->CreateNtupleDColumn("py_keV");
   man->CreateNtupleDColumn("pz_keV");
   man->CreateNtupleDColumn("kineticEnergy_keV");
+  man->CreateNtupleDColumn("time_ns");
+  man->FinishNtuple();
+
+  man->CreateNtuple("fFoil1Forward","Antiprotons Transmitted through Foil 1");
+  man->CreateNtupleDColumn("x_mm");
+  man->CreateNtupleDColumn("y_mm");
+  man->CreateNtupleDColumn("z_mm");
+  man->CreateNtupleDColumn("px_keV");
+  man->CreateNtupleDColumn("py_keV");
+  man->CreateNtupleDColumn("pz_keV");
+  man->CreateNtupleDColumn("kineticEnergy_keV");
+  man->CreateNtupleDColumn("time_ns");
+  man->FinishNtuple();
+
+  man->CreateNtuple("fFoil2Backward","Antiprotons Reflected from Foil 2");
+  man->CreateNtupleDColumn("x_mm");
+  man->CreateNtupleDColumn("y_mm");
+  man->CreateNtupleDColumn("z_mm");
+  man->CreateNtupleDColumn("px_keV");
+  man->CreateNtupleDColumn("py_keV");
+  man->CreateNtupleDColumn("pz_keV");
+  man->CreateNtupleDColumn("kineticEnergy_keV");
+  man->CreateNtupleDColumn("time_ns");
+  man->FinishNtuple();
+
+  man->CreateNtuple("fFoil2Forward","Antiprotons Transmitted through Foil 2");
+  man->CreateNtupleDColumn("x_mm");
+  man->CreateNtupleDColumn("y_mm");
+  man->CreateNtupleDColumn("z_mm");
+  man->CreateNtupleDColumn("px_keV");
+  man->CreateNtupleDColumn("py_keV");
+  man->CreateNtupleDColumn("pz_keV");
+  man->CreateNtupleDColumn("kineticEnergy_keV");
+  man->CreateNtupleDColumn("time_ns");
+  man->FinishNtuple();
+
+  man->CreateNtuple("fHVReflected","Antiprotons Reflected from HV Barrier at the end of the trap");
+  man->CreateNtupleDColumn("x_mm");
+  man->CreateNtupleDColumn("y_mm");
+  man->CreateNtupleDColumn("z_mm");
+  man->CreateNtupleDColumn("px_keV");
+  man->CreateNtupleDColumn("py_keV");
+  man->CreateNtupleDColumn("pz_keV");
+  man->CreateNtupleDColumn("kineticEnergy_keV");
+  man->CreateNtupleDColumn("time_ns");
+  man->FinishNtuple();
+
+  man->CreateNtuple("fHVTransmitted","Antiprotons Transmitted through HV Barrier at the end of the trap");
+  man->CreateNtupleDColumn("x_mm");
+  man->CreateNtupleDColumn("y_mm");
+  man->CreateNtupleDColumn("z_mm");
+  man->CreateNtupleDColumn("px_keV");
+  man->CreateNtupleDColumn("py_keV");
+  man->CreateNtupleDColumn("pz_keV");
+  man->CreateNtupleDColumn("kineticEnergy_keV");
+  man->CreateNtupleDColumn("time_ns");
+  man->FinishNtuple();
+
+  man->CreateNtuple("fTrapped","Antiprotons at the position of the First HV Barrier");
+  man->CreateNtupleDColumn("x_mm");
+  man->CreateNtupleDColumn("y_mm");
+  man->CreateNtupleDColumn("z_mm");
+  man->CreateNtupleDColumn("px_keV");
+  man->CreateNtupleDColumn("py_keV");
+  man->CreateNtupleDColumn("pz_keV");
+  man->CreateNtupleDColumn("kineticEnergy_keV");
+  man->CreateNtupleDColumn("time_ns");
   man->FinishNtuple();
 
 }

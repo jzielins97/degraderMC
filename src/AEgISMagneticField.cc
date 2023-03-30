@@ -149,20 +149,6 @@ void AEgISMagneticField::GetFieldValue(const G4double position[4],G4double *bFie
     bField[2] = aegisbZ[index]/10000.;
   }
 
-    //  if ((index>=aegisbGranularity)||(index<0)) {
-    //    G4cout << " index out of bounds i,z,r !!! " << index << " " << position[2] << " " << radius << G4endl;
-    //  } else {
-    // G4cout << " GetFieldValue: x,y,z,r,index: " << position[0] << " " << position[1] << " " 
-    //        << position[2] << " " << radius  << " , " << index << G4endl;
-    // G4cout << " GetValue: Bx,Bz,Bz,Br " << bField[0] << " " << bField[1] << " " << bField[2] << 
-    //           " ; " << aegisbR[index] << " " << aegisbZ[index] << G4endl;
-    //  }
-    //  G4cout << " ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" << G4endl;      
-     
-    //  bField[0] = 0.;
-    //  bField[1] = 0.;
-    //  bField[2] = 0.1;
-     
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

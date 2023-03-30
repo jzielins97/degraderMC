@@ -51,9 +51,12 @@ class AEgISTrackerSD : public G4VSensitiveDetector
 {
   public:
     AEgISTrackerSD(const G4String& name, 
-                const G4String& hitsCollectionName);
+		   const G4String& hitsCollectionName,
+		   G4bool is_forward,
+		   G4int ntuple_id,
+		   G4bool kill_particle);
     virtual ~AEgISTrackerSD();
-  
+
     // methods from base class
     virtual void   Initialize(G4HCofThisEvent* hitCollection);
     virtual G4bool ProcessHits(G4Step* step, G4TouchableHistory* history);
@@ -61,6 +64,9 @@ class AEgISTrackerSD : public G4VSensitiveDetector
 
   private:
     AEgISTrackerHitsCollection* fHitsCollection;
+    G4bool fForward; // which way do you want to count (foward = pZ>0; backward = pZ<0)
+    G4int fNtupleId; // number of ntuple corresponding to this detector
+    G4bool fKillParticle; // after counting the hit, should the particle be killed
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

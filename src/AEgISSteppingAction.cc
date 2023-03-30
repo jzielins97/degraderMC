@@ -24,7 +24,7 @@
 // ********************************************************************
 //
 //
-/// copy of \file B1SteppingAction.cc
+/// \file AEgISSteppingAction.cc
 /// \brief Implementation of the AEgISSteppingAction class
 
 #include "AEgISSteppingAction.hh"
@@ -91,7 +91,7 @@ void AEgISSteppingAction::UserSteppingAction(const G4Step* step)
   G4ThreeVector postDirection = step->GetPostStepPoint()->GetMomentumDirection();
   G4ThreeVector postPosition = step->GetPostStepPoint()->GetPosition();
   // G4cout << preDirection << " " << step->GetPreStepPoint()->GetPosition()<<G4endl;
-  if(direction[2] < 1e-3 && abs(postPosition[2] - position[2])/CLHEP::nm < 1e-1){
+  if(abs(direction[2]) < 1e-3 && abs(postPosition[2] - position[2])/CLHEP::nm < 1e-1){
     // Antiproton is moving perpendicular to the BField.
     // This creates circular motion that is not moving forward in the Z direction.
     // Antiproton will never hit the dump. Therefore, kill it now
@@ -100,16 +100,10 @@ void AEgISSteppingAction::UserSteppingAction(const G4Step* step)
   }
   
   G4VPhysicalVolume* ph_volume = step->GetPostStepPoint()->GetPhysicalVolume();
-  // Check if antiproton is moving in oposite direction
-  if(direction[2] < 0 && ( ph_volume->GetName() == "MagneticField" || ph_volume->GetName() == "World" ) ){
-    track->SetTrackStatus(fStopAndKill);
-    return;
-  }
-    
   if(ph_volume->GetName() != "Dump") return;
   // particle hit the Dump volume, kill its track
   track->SetTrackStatus(fStopAndKill);
   return;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo.....
