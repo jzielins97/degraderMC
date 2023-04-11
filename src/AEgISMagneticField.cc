@@ -57,7 +57,7 @@ AEgISMagneticField::AEgISMagneticField(double posZ)
 
     aegisbGranularity=0;
 
-    fp = fopen("bfield.csv", "r");
+    fp = fopen("bfield-5Tfull.csv", "r");
     if(NULL == fp)
     {
        printf("\nError in opening file.");
@@ -65,10 +65,10 @@ AEgISMagneticField::AEgISMagneticField(double posZ)
     }
     fclose(fp);
 
-    ifs.open("bfield.csv");
-    for (int k=0; k<65592; k++)
+    ifs.open("bfield-5Tfull.csv");
+    int k=0;
+    while(getline(ifs,s1))
     {
-      getline(ifs,s1);
       if (ifs.eof()) {break;}
       stringstream stream(s1);
       int j=0;
@@ -77,11 +77,12 @@ AEgISMagneticField::AEgISMagneticField(double posZ)
         j++;
         if (!stream) {break;}
       }
-      aegisrB[k]=A[0];
-      aegiszB[k]=A[1];
+      // aegisrB[k]=A[0];
+      // aegiszB[k]=A[1];
       aegisbR[k]=A[2];
       aegisbZ[k]=A[3];
       aegisbGranularity = aegisbGranularity+1;
+      k++;
     }
     ifs.close();
     
@@ -123,7 +124,6 @@ void AEgISMagneticField::GetFieldValue(const G4double position[4],G4double *bFie
   G4int index = (position[2] - fMagneticFieldStart)/10;
   index = index*301 + radius*10;
   
-
 //      G4cout << " vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv" << G4endl;      
 //      G4cout << " number of points in field map: " << aegisbGranularity << G4endl;
 //      G4cout << " GetFieldValue: r,z,index: " << radius << " , " << position[2] << " , " << index << G4endl;
@@ -131,7 +131,7 @@ void AEgISMagneticField::GetFieldValue(const G4double position[4],G4double *bFie
 // B-field in Tesla (map is in Gauss)
 
   if ( (position[2]<fMagneticFieldStart) ||
-       (position[2] - fMagneticFieldStart > 217*cm) ||
+       (position[2] - fMagneticFieldStart > 357*cm) ||
        (radius>10.*cm) ||
        (index>=aegisbGranularity) ||
        (index<0)) {

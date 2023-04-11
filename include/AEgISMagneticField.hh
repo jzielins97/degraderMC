@@ -50,10 +50,10 @@ class AEgISMagneticField : public G4MagneticField
     G4double fMagneticFieldStart; // first Z value with the magnetic field
 
 //    G4double rB[6], zB[6], bR[6], bZ[6];
-    G4double aegisrB[65592];
-    G4double aegiszB[65592];
-    G4double aegisbR[65592];
-    G4double aegisbZ[65592];
+    // G4double aegisrB[107067];
+    // G4double aegiszB[107067];
+    G4double aegisbR[107067];
+    G4double aegisbZ[107067];
     G4int    aegisbGranularity;
 
 };

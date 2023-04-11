@@ -129,7 +129,7 @@ void AEgISDetectorConstruction::DefineMaterials()
   fVacuumMaterial = nistManager->FindOrBuildMaterial("G4_Galactic");
   
   // Air defined using NIST Manager
-  fWorldMaterial  = nistManager->FindOrBuildMaterial("G4_AIR");
+  // fWorldMaterial  = nistManager->FindOrBuildMaterial("G4_AIR");
   
   //---------------------  Target and Degrader material -------------------
   
@@ -140,7 +140,7 @@ void AEgISDetectorConstruction::DefineMaterials()
   if(!fFirstMetalizationMaterial) fFirstMetalizationMaterial = nistManager->FindOrBuildMaterial("G4_Al");
   if(!fSecondMetalizationMaterial) fSecondMetalizationMaterial = nistManager->FindOrBuildMaterial("G4_Al");
 
-  fDumpMaterial = nistManager->FindOrBuildMaterial("G4_Galactic");
+  fTrapMaterial = nistManager->FindOrBuildMaterial("G4_Al");
 
   // Print materials
   G4cout << *(G4Material::GetMaterialTable()) << G4endl;
@@ -156,7 +156,7 @@ void AEgISDetectorConstruction::AddDetector(G4ThreeVector position, G4LogicalVol
 {
   fDetectorS[detectorID] = new G4Tubs("detectorS_"+detectorID,
 			  0.,
-			  7.5 * cm,
+			  17 * mm,
 			  2.5*nm,
 			  0.*deg,
 			  360.*deg);
@@ -194,17 +194,28 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
   // Sizes of the principal geometrical components (solids)
 // ==========================================================
   // beam tube for antiproton transport
-  G4double magneticRadius = 10 * cm;
-  G4double magneticLength = 150*cm;
+  G4double magneticRadius = 100 * mm;
+  // G4double magneticLength = 3500*mm; 
+  G4double magneticLength = 3570*mm; // full 5T
   
   // radius for the foils
-  G4double foilRadius = 7.5 * cm;
+  G4double foilRadius = 10.5 * mm;
 
-  // antiproton dump (Au)
+  //traps
+  G4double trap5Tlength = 1070 * mm;
+  G4double trap1Tlength = 480 * mm;
+  G4double trapSpacing = 66 * mm;
+  G4double trapInnerD = 30 * mm;
+  G4double trapThickness = 3 * mm;
+
+  // 1T MCP
+  
+
+  // antiproton dump
   G4double dumpRadius = 1.2*magneticRadius;
 
-  // distance between foils
-  G4double foilGap = 10*cm;
+  // spacer
+  G4double spacerLength = 10*cm;
 
   // steps
   G4double maxFoilStep = 50*nm;
@@ -212,7 +223,7 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
   G4double maxMetalizationStep = 5 * nm;
 
 // ==========================================================
-  G4double worldLength = 1.1 * (foilGap/2 + magneticLength  + foilGap/2);
+  G4double worldLength = 1.1 * (spacerLength/2 + magneticLength  + spacerLength/2);
   G4double dumpLength = 0.01*worldLength;
   
   // Definitions of Solids, Logical Volumes, Physical Volumes
@@ -258,11 +269,11 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
   // *********************************************************
 
   
-   G4ThreeVector positionBField5T = G4ThreeVector(0,0,0);
+   G4ThreeVector positionBField = G4ThreeVector(0,0,0);
    // G4ThreeVector positionBeamTube = G4ThreeVector(0,0,-magneticLength);
-   G4cout << "Magnetic tube 5T is placed at " << positionBField5T << G4endl;
-   G4cout << "  From "<< positionBField5T[2] - magneticLength/2<<" to "<< positionBField5T[2] + magneticLength/2<<G4endl;
-   fMagneticFieldStart = positionBField5T[2] - magneticLength/2;
+   G4cout << "Magnetic tube 5T is placed at " << positionBField << G4endl;
+   G4cout << "  From "<< positionBField[2] - magneticLength/2<<" to "<< positionBField[2] + magneticLength/2<<G4endl;
+   fMagneticFieldStart = positionBField[2] - magneticLength/2;
   
    // BBBBBBBBBBBBBBBB overlapping magnetic field region BBBBBBBBBBBBBB
    // Tube with Local Magnetic field
@@ -281,7 +292,7 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
    // placement of Tube
 
    fMagneticPV = new G4PVPlacement(0,              // no rotation
-				   positionBField5T, // at (x,y,z)
+				   positionBField, // at (x,y,z)
 				   fMagneticLV,   // its logical volume
 				   "MagneticField",       // its name
 				   //                    worldLV,        // its mother volume
@@ -306,7 +317,7 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
     // *********************************************************
     // ===== First degrader metalization layer (downstream) ====
     // *********************************************************
-    G4cout << "Metalization of the first foils is placed at " << positionBField5T + positionFirstMetalization << G4endl;
+    G4cout << "Metalization of the first foils is placed at " << positionBField + positionFirstMetalization << G4endl;
     
     fFirstMetalizationS = new G4Tubs("firstMetalization",
 				     0.,
@@ -344,7 +355,7 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
 
 
     G4ThreeVector positionFirstDegrader = positionFirstMetalization + G4ThreeVector(0,0, fFirstMetalizationThickness/2 + fFirstDegraderThickness/2);
-    G4cout << "First degrader foil is placed at " << positionBField5T + positionFirstDegrader << G4endl;
+    G4cout << "First degrader foil is placed at " << positionBField + positionFirstDegrader << G4endl;
 
     fFirstDegraderS = new G4Tubs("firstDegrader",
 				 0.,
@@ -390,8 +401,8 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
   // main degrader is placed 111.9 cm from the center of the experiment
   // so it is 250 - 111.9 = 138.1 cm from beginning of the magnetic field
   G4ThreeVector positionSecondDegrader(0,0,-magneticLength/2 + 138.1 * cm + fSecondDegraderThickness/2);
-  // G4threevector positionSecondDegrader = positionFirstDegrader + G4ThreeVector(0,0,fFirstDegraderThickness/2 + foilGap + fSecondDegraderThickness/2);
-  G4cout << "Second degrader foil is placed at " << positionBField5T + positionSecondDegrader << G4endl;
+  // G4threevector positionSecondDegrader = positionFirstDegrader + G4ThreeVector(0,0,fFirstDegraderThickness/2 + spacerLength + fSecondDegraderThickness/2);
+  G4cout << "Second degrader foil is placed at " << positionBField + positionSecondDegrader << G4endl;
   
   fSecondDegraderS = new G4Tubs("secondDegrader",
 				0.,
@@ -432,7 +443,7 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
 // *********************************************************
   
   G4ThreeVector positionSecondMetalization = positionSecondDegrader + G4ThreeVector(0,0, fSecondDegraderThickness/2 + fSecondMetalizationThickness/2);
-  G4cout << "Metalization of the second foil is placed at " << positionBField5T + positionSecondMetalization << G4endl;
+  G4cout << "Metalization of the second foil is placed at " << positionBField + positionSecondMetalization << G4endl;
 
 
   fSecondMetalizationS = new G4Tubs("secondMetalization",
@@ -468,7 +479,38 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
 
   G4cout << "    Metalization of the second foil is " << fSecondMetalizationThickness/nm << " nm of " << fSecondMetalizationMaterial->GetName() << G4endl;
   
+  // *********************************************************
+  // ======= 5T trap ===========
+  // *********************************************************
+  G4ThreeVector positionTrap5T = positionSecondMetalization + G4ThreeVector(0,0,fSecondMetalizationThickness/2 + 5 * mm + trap5Tlength/2);
+  G4cout << "5T Trap is placed at " << positionTrap5T << G4endl;
+  G4cout << "  From "<< positionTrap5T[2] - trap5Tlength/2<<" to "<< positionTrap5T[2] + trap5Tlength/2<<G4endl;
 
+  fTrap5TS = new G4Tubs("trap5T",
+			trapInnerD/2,
+			trapInnerD/2+trapThickness,
+			trap5Tlength/2,
+			0.*deg,
+			360.*deg);
+  
+ fTrap5TLV = new G4LogicalVolume(fTrap5TS,
+				 fTrapMaterial,
+				 "Trap5TLV",
+				 0,
+				 0,
+				 0);
+ 
+ fSecondDegraderPV = new G4PVPlacement(0,              // no rotation
+				       positionTrap5T, // at (x,y,z)
+				       fTrap5TLV,   // its logical volume
+				       "Trap5T",       // its name
+				       fMagneticLV, // its mother volume
+				       false,          // no boolean operations
+				       0,              // copy number
+				       fCheckOverlaps); // checking overlaps 
+  
+
+  
   // *********************************************************
   // ======= DETECTOR   ===========
   // *********************************************************
@@ -477,24 +519,44 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
   if(firstFoil){
     // first foil backward detector
     positionDetector  = positionFirstMetalization - G4ThreeVector(0,0, fFirstMetalizationThickness/2 + 2.5 * nm);
-    G4cout << " First foil backward detector is placed at " << positionBField5T + positionDetector << G4endl;
+    G4cout << " First foil backward detector is placed at " << positionBField + positionDetector << G4endl;
     AddDetector(positionDetector, fMagneticLV, 0);
 
     // first foil backward detector
     positionDetector  = positionFirstMetalization + G4ThreeVector(0,0, fFirstMetalizationThickness/2 + fFirstDegraderThickness + 2.5 * nm);
-    G4cout << " First foil forward detector is placed at " << positionBField5T + positionDetector << G4endl;
+    G4cout << " First foil forward detector is placed at " << positionBField + positionDetector << G4endl;
     AddDetector(positionDetector, fMagneticLV, 1);
   }
   
   // second foil backward detector
   positionDetector  = positionSecondDegrader - G4ThreeVector(0,0, fSecondDegraderThickness/2 + 2.5 * nm);
-  G4cout << " Second foil backward detector is placed at " << positionBField5T + positionDetector << G4endl;
+  G4cout << " Second foil backward detector is placed at " << positionBField + positionDetector << G4endl;
   AddDetector(positionDetector, fMagneticLV, 2);
 
   // second foil forward detector
   positionDetector  = positionSecondDegrader + G4ThreeVector(0,0, fSecondDegraderThickness/2 + fSecondMetalizationThickness + 2.5 * nm);
-  G4cout << " Second foil forward detector is placed at " << positionBField5T + positionDetector << G4endl;
+  G4cout << " Second foil forward detector is placed at " << positionBField + positionDetector << G4endl;
   AddDetector(positionDetector, fMagneticLV, 3);
+
+  //=========== 5T trap detectors for trapping=========
+  // 5T trap - inside
+  // position it at the end of the 5T trap - inside
+  positionDetector  = positionTrap5T + G4ThreeVector(0,0, trap5Tlength/2 - 2.5 * nm);
+  G4cout << " 5T inside detector is placed at " << positionBField + positionDetector << G4endl;
+  AddDetector(positionDetector, fMagneticLV, 6);
+
+  // 5T trap - exit forward
+  // position it just outside 5T at the end
+  positionDetector  = positionTrap5T + G4ThreeVector(0,0, trap5Tlength/2 + 2.5 * nm);
+  G4cout << " 5T forward exist detector is placed at " << positionBField + positionDetector << G4endl;
+  AddDetector(positionDetector, fMagneticLV, 5);
+
+  // 5T trap - exit backward
+  // position it at the front of 5T trap - inside
+  positionDetector  = positionTrap5T + G4ThreeVector(0,0, trap5Tlength/2 - 2.5 * nm);
+  G4cout << " 5T backward exit detector is placed at " << positionBField + positionTrap5T + positionDetector << G4endl;
+  AddDetector(positionDetector, fMagneticLV, 6);
+
   
 // *********************************************************
 // =======   particles dump  =========================
@@ -522,7 +584,7 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
   fDumpS = new G4UnionSolid("dump", fDumpS, fDumpCapS, 0,-positionDump);
   
   fDumpLV = new G4LogicalVolume(fDumpS,
-				fDumpMaterial,
+				fVacuumMaterial,
 				"DumpLV",
 				0,
 				0,
@@ -538,13 +600,13 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
 			      fCheckOverlaps);  // checking overlaps 
 
 // --------------------------------------------------------
-// tiny steps in the dump (made of Au) ...
+// tiny steps in the dump (made of nothing) ...
 // Sets a max step length in the "dump" region, with G4StepLimiter, of 5 nm
 // ---------------------------------------------------------
 
   fDumpLV->SetUserLimits(new G4UserLimits(worldLength));
 
-  G4cout << "Dump is " << dumpLength/nm << " nm of " << fDumpMaterial->GetName() << G4endl;
+  G4cout << "Dump is " << dumpLength/nm << " nm of " << fVacuumMaterial->GetName() << G4endl;
 
   // Visualization attributes
 
@@ -566,7 +628,12 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
  
   G4VisAttributes* magneticVisAtt= new G4VisAttributes(G4Colour(0.9,0.9,0.9,0.2));
   magneticVisAtt->SetForceAuxEdgeVisible(true);
-  fMagneticLV->SetVisAttributes(magneticVisAtt);  
+  fMagneticLV->SetVisAttributes(magneticVisAtt);
+
+  G4VisAttributes* trapVisAtt= new G4VisAttributes(G4Colour(1.0,0.0,1.0));
+  trapVisAtt->SetForceAuxEdgeVisible(true);
+  fTrap5TLV->SetVisAttributes(trapVisAtt);  
+
 
 
   // Always return the physical world
@@ -614,9 +681,40 @@ void AEgISDetectorConstruction::ConstructSDandField()
 							      "Foil2ForwardCollection",
 							      true, // is forward?
 							      3, // ntuple id
-							      true); // kill particle?
+							      false); // kill particle?
     fDetectorLV[3]->SetSensitiveDetector(foil2ForwardDetector);
   }
+
+  if(fDetectorLV[4]){
+    G4cout << "Set Trap Inside SD" << G4endl;
+    AEgISTrackerSD* trapInsideDetector = new AEgISTrackerSD("TrapInsideDetector",
+							    "TrapInsideCollection",
+							    false, // is forward?
+							    4, // ntuple id
+							    false); // kill particle?
+    fDetectorLV[4]->SetSensitiveDetector(trapInsideDetector);
+  }
+
+  if(fDetectorLV[5]){
+    G4cout << "Set Trap forward exit SD" << G4endl;
+    AEgISTrackerSD* trapForawrdDetector = new AEgISTrackerSD("TrapForawrdDetector",
+							    "TrapForawrdCollection",
+							    true, // is forward?
+							    5, // ntuple id
+							    true); // kill particle?
+    fDetectorLV[5]->SetSensitiveDetector(trapForawrdDetector);
+  }
+
+  if(fDetectorLV[6]){
+    G4cout << "Set Trap backward exit SD" << G4endl;
+    AEgISTrackerSD* trapBackwardDetector = new AEgISTrackerSD("TrapBackwardDetector",
+							    "trapBackwardCollection",
+							    false, // is forward?
+							    6, // ntuple id
+							    true); // kill particle?
+    fDetectorLV[6]->SetSensitiveDetector(trapBackwardDetector);
+  }
+
   
   // Create global magnetic field messenger.
   // Uniform magnetic field is then created automatically if

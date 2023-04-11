@@ -67,6 +67,7 @@ class AEgISTrackerSD : public G4VSensitiveDetector
     G4bool fForward; // which way do you want to count (foward = pZ>0; backward = pZ<0)
     G4int fNtupleId; // number of ntuple corresponding to this detector
     G4bool fKillParticle; // after counting the hit, should the particle be killed
+    G4double fEntryTime;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

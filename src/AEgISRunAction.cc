@@ -118,7 +118,8 @@ AEgISRunAction::AEgISRunAction()
   man->CreateNtupleDColumn("py_keV");
   man->CreateNtupleDColumn("pz_keV");
   man->CreateNtupleDColumn("kineticEnergy_keV");
-  man->CreateNtupleDColumn("time_ns");
+  man->CreateNtupleDColumn("exitTime_ns");
+  man->CreateNtupleDColumn("entryTime_ns");
   man->FinishNtuple();
 
 }

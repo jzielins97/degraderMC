@@ -81,23 +81,14 @@ class AEgISDetectorConstruction : public G4VUserDetectorConstruction
     G4Material* SetMaterial(G4LogicalVolume*, G4String);
     
     // data members
-    G4LogicalVolume*   fWorldLV;         // pointer to the logical World
-    G4LogicalVolume*   fFirstDegraderLV;  // pointer to the logical First Degrader
-    G4LogicalVolume*   fFirstMetalizationLV;  // pointer to the logical metalization of the First Degrader
-    G4LogicalVolume*   fSecondDegraderLV;   // pointer to the logical Second Degrader (in magnetic field)
-    G4LogicalVolume*   fSecondMetalizationLV;  // pointer to the logical metalization of the Second Degrader
-    G4LogicalVolume*   fDumpLV;   // pointer to the logical (Au) "Detector" layer
-    G4LogicalVolume*   fDetectorLV[7];   // pointer to the logical detector
-    G4LogicalVolume*   fMagneticLV; // pointer to the logical magnetic volume (=beamtube)
-
-    G4Material*        fWorldMaterial;   // pointer to the world material
     G4Material*        fVacuumMaterial;  // pointer to vacuum material
     G4Material*        fFirstDegraderMaterial;
     G4Material*        fSecondDegraderMaterial;
     G4Material*        fFirstMetalizationMaterial; // pointer to the chamber material
     G4Material*        fSecondMetalizationMaterial; // pointer to the chamber material
-    G4Material*        fDumpMaterial;// pointer to detector material (10 nm Au)
+    G4Material*        fTrapMaterial;// pointer to material for traps (Al)
 
+  
     // solids
     G4Tubs* fWorldS;
     G4Tubs* fFirstDegraderS;
@@ -109,8 +100,23 @@ class AEgISDetectorConstruction : public G4VUserDetectorConstruction
     G4VSolid* fDumpS;
     G4Tubs* fDetectorS[7];
     G4Tubs* fMagneticS;
-   
+    G4Tubs* fTrap5TS;
+    G4Tubs* fTrap1TS;
 
+  
+    // logical volumes
+    G4LogicalVolume*   fWorldLV;         // pointer to the logical World
+    G4LogicalVolume*   fFirstDegraderLV;  // pointer to the logical First Degrader
+    G4LogicalVolume*   fFirstMetalizationLV;  // pointer to the logical metalization of the First Degrader
+    G4LogicalVolume*   fSecondDegraderLV;   // pointer to the logical Second Degrader (in magnetic field)
+    G4LogicalVolume*   fSecondMetalizationLV;  // pointer to the logical metalization of the Second Degrader
+    G4LogicalVolume*   fDumpLV;   // pointer to the logical (Au) "Detector" layer
+    G4LogicalVolume*   fDetectorLV[7];   // pointer to the logical detector
+    G4LogicalVolume*   fMagneticLV; // pointer to the logical magnetic volume
+    G4LogicalVolume*   fTrap5TLV; // pointer to the logical volume for 5T trap
+    G4LogicalVolume*   fTrap1TLV; // pointer to the logical volume for 1T trap
+
+  
     // Physical Volume
     G4VPhysicalVolume* fWorldPV;
     G4VPhysicalVolume* fFirstDegraderPV;
@@ -120,6 +126,8 @@ class AEgISDetectorConstruction : public G4VUserDetectorConstruction
     G4VPhysicalVolume* fDumpPV;
     G4VPhysicalVolume* fDetectorPV[7];
     G4VPhysicalVolume* fMagneticPV;
+    G4VPhysicalVolume* fTrap5TPV;
+    G4VPhysicalVolume* fTrap1TPV;
 
     G4bool             fBFieldOn = true;
 

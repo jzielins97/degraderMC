@@ -49,6 +49,7 @@ AEgISTrackerSD::AEgISTrackerSD(const G4String& name,
     fKillParticle(kill_particle)
 {
   collectionName.insert(hitsCollectionName);
+  fEntryTime = 0;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -74,6 +75,7 @@ void AEgISTrackerSD::Initialize(G4HCofThisEvent* hce)
 
 G4bool AEgISTrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 {
+  if(aStep->IsFirstStepInVolume()) fEntryTime = aStep->GetPreStepPoint()->GetGlobalTime();
 // check if it is moving backwards
   G4ThreeVector momentumDirection = aStep->GetTrack()->GetMomentumDirection();
   G4bool test = fForward ^ (momentumDirection[2] > 0);
@@ -117,6 +119,7 @@ G4bool AEgISTrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
    man->FillNtupleDColumn(fNtupleId,6,eResidual/CLHEP::keV);
    //fill in time
    man->FillNtupleDColumn(fNtupleId,7,globalTime/CLHEP::ns);
+   if(fNtupleId == 6) man->FillNtupleDColumn(fNtupleId,7,fEntryTime/CLHEP::ns);
    //add entry to the ntuple
    man->AddNtupleRow(fNtupleId);
    
