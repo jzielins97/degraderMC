@@ -101,6 +101,7 @@ class AEgISDetectorConstruction : public G4VUserDetectorConstruction
     G4Tubs* fDetectorS[7];
     G4Tubs* fMagneticS;
     G4Tubs* fTrap5TS;
+    G4Tubs* fHVElectrodeS;
     G4Tubs* fTrap1TS;
 
   
@@ -114,6 +115,7 @@ class AEgISDetectorConstruction : public G4VUserDetectorConstruction
     G4LogicalVolume*   fDetectorLV[7];   // pointer to the logical detector
     G4LogicalVolume*   fMagneticLV; // pointer to the logical magnetic volume
     G4LogicalVolume*   fTrap5TLV; // pointer to the logical volume for 5T trap
+    G4LogicalVolume*   fHVElectrodeLV;
     G4LogicalVolume*   fTrap1TLV; // pointer to the logical volume for 1T trap
 
   
@@ -127,6 +129,7 @@ class AEgISDetectorConstruction : public G4VUserDetectorConstruction
     G4VPhysicalVolume* fDetectorPV[7];
     G4VPhysicalVolume* fMagneticPV;
     G4VPhysicalVolume* fTrap5TPV;
+    G4VPhysicalVolume* fHVElectrodePV;
     G4VPhysicalVolume* fTrap1TPV;
 
     G4bool             fBFieldOn = true;

@@ -56,10 +56,16 @@
 
 #include "G4UserLimits.hh"
 
+#include "G4GeometryManager.hh"
+#include "G4PhysicalVolumeStore.hh"
+#include "G4LogicalVolumeStore.hh"
+#include "G4SolidStore.hh"
+
 // BBBBBBBBBBBBBBBBBBBBBB
 #include "G4SDManager.hh"
 #include "G4VSensitiveDetector.hh"
 #include "G4RunManager.hh"
+#include "G4StateManager.hh"
 #include "G4GenericMessenger.hh"
 // BBBBBBBBBBBBBBBBBBBBBB
 
@@ -113,6 +119,13 @@ AEgISDetectorConstruction::~AEgISDetectorConstruction()
  
 G4VPhysicalVolume* AEgISDetectorConstruction::Construct()
 {
+  if (fWorldPV) {
+     G4GeometryManager::GetInstance()->OpenGeometry();
+     G4PhysicalVolumeStore::GetInstance()->Clean();
+     G4LogicalVolumeStore::GetInstance()->Clean();
+     G4SolidStore::GetInstance()->Clean();
+  }
+
   DefineMaterials();
   return DefineVolumes();
 }
@@ -194,7 +207,7 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
   // Sizes of the principal geometrical components (solids)
 // ==========================================================
   // beam tube for antiproton transport
-  G4double magneticRadius = 100 * mm;
+  G4double magneticRadius = 300 * mm;
   // G4double magneticLength = 3500*mm; 
   G4double magneticLength = 3570*mm; // full 5T
   
@@ -228,8 +241,6 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
   
   // Definitions of Solids, Logical Volumes, Physical Volumes
   // =================== World =========================
-
-  // G4GeometryManager::GetInstance()->SetWorldMaximumExtent(worldLength);
 
   G4cout << "Computed tolerance = "
          << G4GeometryTolerance::GetInstance()->GetSurfaceTolerance()/mm
@@ -381,9 +392,8 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
 					 fCheckOverlaps); // checking overlaps 
 
     // --------------------------------------------------
-    // tiny steps in the degrader foil ...
-    // Sets a max step length in the "target" region, with G4StepLimiter, of 50 nm
-    // --------------------------------------------------    
+    // tiny steps in the trace lines
+    // ---------------------------------------------------------
     fStepLimit = new G4UserLimits(maxFoilStep);
     fFirstDegraderLV->SetUserLimits(fStepLimit);
     
@@ -401,7 +411,6 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
   // main degrader is placed 111.9 cm from the center of the experiment
   // so it is 250 - 111.9 = 138.1 cm from beginning of the magnetic field
   G4ThreeVector positionSecondDegrader(0,0,-magneticLength/2 + 138.1 * cm + fSecondDegraderThickness/2);
-  // G4threevector positionSecondDegrader = positionFirstDegrader + G4ThreeVector(0,0,fFirstDegraderThickness/2 + spacerLength + fSecondDegraderThickness/2);
   G4cout << "Second degrader foil is placed at " << positionBField + positionSecondDegrader << G4endl;
   
   fSecondDegraderS = new G4Tubs("secondDegrader",
@@ -428,10 +437,6 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
 				       fCheckOverlaps); // checking overlaps 
 
 // --------------------------------------------------
-// tiny steps in the degrader foil ...
-// Sets a max step length in the "target" region, with G4StepLimiter, of 50 nm
-// --------------------------------------------------
-
  fStepLimit = new G4UserLimits(maxFoilStep);
  fSecondDegraderLV->SetUserLimits(fStepLimit);
 
@@ -471,12 +476,10 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
 
 // --------------------------------------------------------
 // tiny steps in the trace lines (made of Au) ...
-// Sets a max step length in the "detector" region, with G4StepLimiter, of 5 nm
 // ---------------------------------------------------------
-
   fStepLimit = new G4UserLimits(maxMetalizationStep);
   fSecondMetalizationLV->SetUserLimits(fStepLimit);
-
+  
   G4cout << "    Metalization of the second foil is " << fSecondMetalizationThickness/nm << " nm of " << fSecondMetalizationMaterial->GetName() << G4endl;
   
   // *********************************************************
@@ -485,7 +488,7 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
   G4ThreeVector positionTrap5T = positionSecondMetalization + G4ThreeVector(0,0,fSecondMetalizationThickness/2 + 5 * mm + trap5Tlength/2);
   G4cout << "5T Trap is placed at " << positionTrap5T << G4endl;
   G4cout << "  From "<< positionTrap5T[2] - trap5Tlength/2<<" to "<< positionTrap5T[2] + trap5Tlength/2<<G4endl;
-
+  
   fTrap5TS = new G4Tubs("trap5T",
 			trapInnerD/2,
 			trapInnerD/2+trapThickness,
@@ -493,23 +496,55 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
 			0.*deg,
 			360.*deg);
   
- fTrap5TLV = new G4LogicalVolume(fTrap5TS,
-				 fTrapMaterial,
-				 "Trap5TLV",
-				 0,
-				 0,
-				 0);
- 
- fSecondDegraderPV = new G4PVPlacement(0,              // no rotation
-				       positionTrap5T, // at (x,y,z)
-				       fTrap5TLV,   // its logical volume
-				       "Trap5T",       // its name
-				       fMagneticLV, // its mother volume
-				       false,          // no boolean operations
-				       0,              // copy number
-				       fCheckOverlaps); // checking overlaps 
+  fTrap5TLV = new G4LogicalVolume(fTrap5TS,
+				  fTrapMaterial,
+				  "Trap5TLV",
+				  0,
+				  0,
+				  0);
   
+  fSecondDegraderPV = new G4PVPlacement(0,              // no rotation
+					positionTrap5T, // at (x,y,z)
+					fTrap5TLV,   // its logical volume
+					"Trap5T",       // its name
+					fMagneticLV, // its mother volume
+					false,          // no boolean operations
+					0,              // copy number
+					fCheckOverlaps); // checking overlaps 
+  
+  
+  fSecondMetalizationLV->SetUserLimits(new G4UserLimits(maxFieldStep));
 
+  // *********************************************************
+  // ======= electrode in the 5T trap    ===========
+  // *********************************************************
+  // let's assume that the electrode is 3 mm thick
+  G4ThreeVector positionElectrode = G4ThreeVector(0,0, trap5Tlength/2 - trapThickness/2 * mm);
+  G4cout << "HV Electrode is placed at " << positionBField + positionTrap5T + positionElectrode << G4endl;
+  
+  fHVElectrodeS = new G4Tubs("HVElectrodeS",
+				    0.,
+				    trapInnerD/2,
+				    trapThickness/2,
+				    0.*deg,
+				    360.*deg);
+  
+  fHVElectrodeLV = new G4LogicalVolume(fHVElectrodeS,
+				       fVacuumMaterial,
+				       "HVElectrodeLV",
+				       0,
+				       0,
+				       0);
+  
+  fHVElectrodePV = new G4PVPlacement(0,                // no rotation
+				     positionElectrode, // at (x,y,z)
+				     fHVElectrodeLV,   // its logical volume
+				     "HVElectrode",       // its name
+				     fTrap5TLV,   // its mother volume
+				     false,            // no boolean operations
+				     0,                // copy number
+				     fCheckOverlaps);  // checking overlaps 
+ 
   
   // *********************************************************
   // ======= DETECTOR   ===========
@@ -541,9 +576,9 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
   //=========== 5T trap detectors for trapping=========
   // 5T trap - inside
   // position it at the end of the 5T trap - inside
-  positionDetector  = positionTrap5T + G4ThreeVector(0,0, trap5Tlength/2 - 2.5 * nm);
+  positionDetector  = positionElectrode - G4ThreeVector(0,0, trapThickness/2 + 2.5 * nm);
   G4cout << " 5T inside detector is placed at " << positionBField + positionDetector << G4endl;
-  AddDetector(positionDetector, fMagneticLV, 6);
+  AddDetector(positionDetector, fTrap5TLV, 6);
 
   // 5T trap - exit forward
   // position it just outside 5T at the end
@@ -553,9 +588,9 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
 
   // 5T trap - exit backward
   // position it at the front of 5T trap - inside
-  positionDetector  = positionTrap5T + G4ThreeVector(0,0, trap5Tlength/2 - 2.5 * nm);
+  positionDetector  = -G4ThreeVector(0,0, trap5Tlength/2 - 2.5 * nm);
   G4cout << " 5T backward exit detector is placed at " << positionBField + positionTrap5T + positionDetector << G4endl;
-  AddDetector(positionDetector, fMagneticLV, 6);
+  AddDetector(positionDetector, fTrap5TLV, 6);
 
   
 // *********************************************************
@@ -630,7 +665,7 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
   magneticVisAtt->SetForceAuxEdgeVisible(true);
   fMagneticLV->SetVisAttributes(magneticVisAtt);
 
-  G4VisAttributes* trapVisAtt= new G4VisAttributes(G4Colour(1.0,0.0,1.0));
+  G4VisAttributes* trapVisAtt= new G4VisAttributes(G4Colour(1.,1.0,0.0));
   trapVisAtt->SetForceAuxEdgeVisible(true);
   fTrap5TLV->SetVisAttributes(trapVisAtt);  
 
@@ -737,8 +772,9 @@ void AEgISDetectorConstruction::ConstructSDandField()
 void AEgISDetectorConstruction::SetFirstDegraderThickness(G4double size)
 {
   fFirstDegraderThickness = size;
-  // Construct();
-  G4RunManager::GetRunManager()->GeometryHasBeenModified();
+  if ( G4StateManager::GetStateManager()->GetCurrentState() != G4State_PreInit ) {
+    G4RunManager::GetRunManager()->ReinitializeGeometry();
+  }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -746,8 +782,9 @@ void AEgISDetectorConstruction::SetFirstDegraderThickness(G4double size)
 void AEgISDetectorConstruction::SetSecondDegraderThickness(G4double size)
 {
   fSecondDegraderThickness = size;
-  // Construct();
-  G4RunManager::GetRunManager()->GeometryHasBeenModified();
+  if ( G4StateManager::GetStateManager()->GetCurrentState() != G4State_PreInit ) {
+    G4RunManager::GetRunManager()->ReinitializeGeometry();
+  }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -755,8 +792,9 @@ void AEgISDetectorConstruction::SetSecondDegraderThickness(G4double size)
 void AEgISDetectorConstruction::SetFirstMetalizationThickness(G4double size)
 {
   fFirstMetalizationThickness = size;
-  // Construct();
-  G4RunManager::GetRunManager()->GeometryHasBeenModified();
+  if ( G4StateManager::GetStateManager()->GetCurrentState() != G4State_PreInit ) {
+    G4RunManager::GetRunManager()->ReinitializeGeometry();
+  }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -764,8 +802,9 @@ void AEgISDetectorConstruction::SetFirstMetalizationThickness(G4double size)
 void AEgISDetectorConstruction::SetSecondMetalizationThickness(G4double size)
 {
   fSecondMetalizationThickness = size;
-  // Construct();
-  G4RunManager::GetRunManager()->GeometryHasBeenModified();
+  if ( G4StateManager::GetStateManager()->GetCurrentState() != G4State_PreInit ) {
+    G4RunManager::GetRunManager()->ReinitializeGeometry();
+  }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
