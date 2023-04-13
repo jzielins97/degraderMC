@@ -26,8 +26,7 @@
 #include "G4SystemOfUnits.hh"
 
 #include "AEgISGlobalField.hh"
-// #include "AEgIS5TMagnet.hh"
-// #include "AEgISHVElectrode.hh"
+#include "AEgISMagneticField5T.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -101,7 +100,7 @@ void AEgISGlobalField::ConstructField()
 
   //  Need to SetFieldChangesEnergy to account for a time varying electric
   //  field (r.f. fields)
-  fFieldManager->SetFieldChangesEnergy(true);
+  fFieldManager->SetFieldChangesEnergy(false);
 
   //  Set the field
   fFieldManager->SetDetectorField(this);
@@ -134,32 +133,14 @@ void AEgISGlobalField::ConstructField()
 
   fFieldManager->SetChordFinder(fChordFinder);
 
-  // G4double l = 0.0;
-  // G4double B1 = fDetectorConstruction->GetCaptureMgntB1();
-  // G4double B2 = fDetectorConstruction->GetCaptureMgntB2();
+  G4LogicalVolume* logicMgnt5T = fDetectorConstruction->GetMgnt5T();
+  G4ThreeVector mgnt5TCenter = fDetectorConstruction->GetMgnt5TCenter();
 
-  // G4LogicalVolume* logicCaptureMgnt = fDetectorConstruction->GetCaptureMgnt();
-  // G4ThreeVector captureMgntCenter =
-  //                                fDetectorConstruction->GetCaptureMgntCenter();
-
-  // F04FocusSolenoid* focusSolenoid =
-  //          new F04FocusSolenoid(B1, B2, l, logicCaptureMgnt,captureMgntCenter);
-  // focusSolenoid -> SetHalf(true);
-
-  // G4double B = fDetectorConstruction->GetTransferMgntB();
-
-  // G4LogicalVolume* logicTransferMgnt =
-  //                                     fDetectorConstruction->GetTransferMgnt();
-  // G4ThreeVector transferMgntCenter =
-  //                               fDetectorConstruction->GetTransferMgntCenter();
-
-  // F04SimpleSolenoid* simpleSolenoid =
-  //            new F04SimpleSolenoid(B, l, logicTransferMgnt,transferMgntCenter);
-
-  // simpleSolenoid->SetColor("1,0,1");
-  // simpleSolenoid->SetColor("0,1,1");
-  // simpleSolenoid->SetMaxStep(1.5*mm);
-  // simpleSolenoid->SetMaxStep(2.5*mm);
+  if(fDetectorConstruction->GetB5TFieldFlag()){
+    AEgISMagneticField5T* aegis5Tfield = new AEgISMagneticField5T("bfield-5T.csv",logicMgnt5T, mgnt5TCenter);
+    // set max step size to have at least 10 points in the magnetic field
+    aegis5Tfield->SetMaxStep(fDetectorConstruction->GetMgnt5Tlength()/10);
+  }
 
   if (fFields) {
      if (fFields->size()>0) {
@@ -259,7 +240,6 @@ void AEgISGlobalField::GetFieldValue(const G4double* point, G4double* field) con
          p->AddFieldValue(point,field);
       }
   }
-
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -91,7 +91,7 @@ void AEgISSteppingAction::UserSteppingAction(const G4Step* step)
   G4ThreeVector postDirection = step->GetPostStepPoint()->GetMomentumDirection();
   G4ThreeVector postPosition = step->GetPostStepPoint()->GetPosition();
   // G4cout << preDirection << " " << step->GetPreStepPoint()->GetPosition()<<G4endl;
-  if(abs(direction[2]) < 1e-3 && abs(postPosition[2] - position[2])/CLHEP::nm < 1e-1){
+  if(abs(direction[2]) < 1e-3){ // && abs(postPosition[2] - position[2])/CLHEP::nm < 1e-1
     // Antiproton is moving perpendicular to the BField.
     // This creates circular motion that is not moving forward in the Z direction.
     // Antiproton will never hit the dump. Therefore, kill it now

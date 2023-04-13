@@ -31,12 +31,14 @@
 #define AEgISDetectorConstruction_h 1
 
 #include "globals.hh"
+#include "G4Cache.hh"
 #include "G4VUserDetectorConstruction.hh"
 #include "tls.hh"
 #include "G4FieldManager.hh"
 #include "G4ThreeVector.hh"
 
 class AEgISMagneticField;
+class AEgISGlobalField;
 class G4VPhysicalVolume;
 class G4LogicalVolume;
 class G4Tubs;
@@ -52,105 +54,118 @@ class AEgISDetectorMessenger;
 
 class AEgISDetectorConstruction : public G4VUserDetectorConstruction
 {
-  public:
-    AEgISDetectorConstruction();
-    virtual ~AEgISDetectorConstruction();
+public:
+  AEgISDetectorConstruction();
+  virtual ~AEgISDetectorConstruction();
 
-  public:
-    virtual G4VPhysicalVolume* Construct();
-    virtual void ConstructSDandField();
+public:
+  virtual G4VPhysicalVolume* Construct();
+  virtual void ConstructSDandField();
 
-    // Set methods
-    void SetFirstDegraderThickness(G4double);
-    void SetSecondDegraderThickness(G4double);
-    void SetFirstMetalizationThickness(G4double);
-    void SetSecondMetalizationThickness(G4double);    
-    void SetFirstDegraderMaterial(G4String);
-    void SetSecondDegraderMaterial(G4String);
-    void SetFirstMetalizationMaterial(G4String);
-    void SetSecondMetalizationMaterial(G4String);
-    void SetMaxStep (G4double );
-    void SetCheckOverlaps(G4bool );
-    void SetMagneticField(G4bool );
+  // Get methods
+  G4bool GetB5TFieldFlag(){return f5TFieldOn;}
+  G4LogicalVolume* GetMgnt5T(){return fMgnt5TLV;}
+  G4double GetMgnt5Tlength(){return fMgnt5Tlength;}
+  G4double GetMgnt5Tradius(){return fMgnt5Tradius;}
+  G4ThreeVector GetMgnt5TCenter(){return fMgnt5TCenter;}
+  
+  // Set methods
+  void SetFirstDegraderThickness(G4double);
+  void SetSecondDegraderThickness(G4double);
+  void SetFirstMetalizationThickness(G4double);
+  void SetSecondMetalizationThickness(G4double);    
+  void SetFirstDegraderMaterial(G4String);
+  void SetSecondDegraderMaterial(G4String);
+  void SetFirstMetalizationMaterial(G4String);
+  void SetSecondMetalizationMaterial(G4String);
+  void SetMaxStep (G4double );
+  void SetCheckOverlaps(G4bool );
+  void SetMagneticField(G4bool );
 
-  private:
-    // methods
-    void AddDetector(G4ThreeVector position, G4LogicalVolume* motherLV, G4int detectorID);
-    void DefineMaterials();
-    G4VPhysicalVolume* DefineVolumes();
-    G4Material* SetMaterial(G4LogicalVolume*, G4String);
+private:
+  // methods
+  void AddDetector(G4ThreeVector position, G4LogicalVolume* motherLV, G4int detectorID);
+  void DefineMaterials();
+  G4VPhysicalVolume* DefineVolumes();
+  G4Material* SetMaterial(G4LogicalVolume*, G4String);
     
-    // data members
-    G4Material*        fVacuumMaterial;  // pointer to vacuum material
-    G4Material*        fFirstDegraderMaterial;
-    G4Material*        fSecondDegraderMaterial;
-    G4Material*        fFirstMetalizationMaterial; // pointer to the chamber material
-    G4Material*        fSecondMetalizationMaterial; // pointer to the chamber material
-    G4Material*        fTrapMaterial;// pointer to material for traps (Al)
+  // data members
+  G4Cache<AEgISGlobalField*> fFieldSetUp;
+  
+  G4Material*        fVacuumMaterial;  // pointer to vacuum material
+  G4Material*        fFirstDegraderMaterial;
+  G4Material*        fSecondDegraderMaterial;
+  G4Material*        fFirstMetalizationMaterial; // pointer to the chamber material
+  G4Material*        fSecondMetalizationMaterial; // pointer to the chamber material
+  G4Material*        fTrapMaterial;// pointer to material for traps (Al)
 
   
-    // solids
-    G4Tubs* fWorldS;
-    G4Tubs* fFirstDegraderS;
-    G4Tubs* fFirstMetalizationS;
-    G4Tubs* fSecondDegraderS;
-    G4Tubs* fSecondMetalizationS;
-    G4Tubs* fDumpTubeS;
-    G4Tubs* fDumpCapS;
-    G4VSolid* fDumpS;
-    G4Tubs* fDetectorS[7];
-    G4Tubs* fMagneticS;
-    G4Tubs* fTrap5TS;
-    G4Tubs* fHVElectrodeS;
-    G4Tubs* fTrap1TS;
+  // solids
+  G4Tubs* fWorldS;
+  G4Tubs* fFirstDegraderS;
+  G4Tubs* fFirstMetalizationS;
+  G4Tubs* fSecondDegraderS;
+  G4Tubs* fSecondMetalizationS;
+  G4Tubs* fDumpTubeS;
+  G4Tubs* fDumpCapS;
+  G4VSolid* fDumpS;
+  G4Tubs* fDetectorS[7];
+  G4Tubs* fMgnt5TS;
+  G4Tubs* fTrap5TS;
+  G4Tubs* fHVElectrodeS;
+  G4Tubs* fTrap1TS;
 
   
-    // logical volumes
-    G4LogicalVolume*   fWorldLV;         // pointer to the logical World
-    G4LogicalVolume*   fFirstDegraderLV;  // pointer to the logical First Degrader
-    G4LogicalVolume*   fFirstMetalizationLV;  // pointer to the logical metalization of the First Degrader
-    G4LogicalVolume*   fSecondDegraderLV;   // pointer to the logical Second Degrader (in magnetic field)
-    G4LogicalVolume*   fSecondMetalizationLV;  // pointer to the logical metalization of the Second Degrader
-    G4LogicalVolume*   fDumpLV;   // pointer to the logical (Au) "Detector" layer
-    G4LogicalVolume*   fDetectorLV[7];   // pointer to the logical detector
-    G4LogicalVolume*   fMagneticLV; // pointer to the logical magnetic volume
-    G4LogicalVolume*   fTrap5TLV; // pointer to the logical volume for 5T trap
-    G4LogicalVolume*   fHVElectrodeLV;
-    G4LogicalVolume*   fTrap1TLV; // pointer to the logical volume for 1T trap
+  // logical volumes
+  G4LogicalVolume*   fWorldLV;         // pointer to the logical World
+  G4LogicalVolume*   fFirstDegraderLV;  // pointer to the logical First Degrader
+  G4LogicalVolume*   fFirstMetalizationLV;  // pointer to the logical metalization of the First Degrader
+  G4LogicalVolume*   fSecondDegraderLV;   // pointer to the logical Second Degrader (in magnetic field)
+  G4LogicalVolume*   fSecondMetalizationLV;  // pointer to the logical metalization of the Second Degrader
+  G4LogicalVolume*   fDumpLV;   // pointer to the logical (Au) "Detector" layer
+  G4LogicalVolume*   fDetectorLV[7];   // pointer to the logical detector
+  G4LogicalVolume*   fMgnt5TLV; // pointer to the logical magnetic volume
+  G4LogicalVolume*   fTrap5TLV; // pointer to the logical volume for 5T trap
+  G4LogicalVolume*   fHVElectrodeLV;
+  G4LogicalVolume*   fTrap1TLV; // pointer to the logical volume for 1T trap
 
   
-    // Physical Volume
-    G4VPhysicalVolume* fWorldPV;
-    G4VPhysicalVolume* fFirstDegraderPV;
-    G4VPhysicalVolume* fFirstMetalizationPV;
-    G4VPhysicalVolume* fSecondDegraderPV;
-    G4VPhysicalVolume* fSecondMetalizationPV;
-    G4VPhysicalVolume* fDumpPV;
-    G4VPhysicalVolume* fDetectorPV[7];
-    G4VPhysicalVolume* fMagneticPV;
-    G4VPhysicalVolume* fTrap5TPV;
-    G4VPhysicalVolume* fHVElectrodePV;
-    G4VPhysicalVolume* fTrap1TPV;
+  // Physical Volume
+  G4VPhysicalVolume* fWorldPV;
+  G4VPhysicalVolume* fFirstDegraderPV;
+  G4VPhysicalVolume* fFirstMetalizationPV;
+  G4VPhysicalVolume* fSecondDegraderPV;
+  G4VPhysicalVolume* fSecondMetalizationPV;
+  G4VPhysicalVolume* fDumpPV;
+  G4VPhysicalVolume* fDetectorPV[7];
+  G4VPhysicalVolume* fMgnt5TPV;
+  G4VPhysicalVolume* fTrap5TPV;
+  G4VPhysicalVolume* fHVElectrodePV;
+  G4VPhysicalVolume* fTrap1TPV;
 
-    G4bool             fBFieldOn = true;
+  G4double           fFirstDegraderThickness;
+  G4double           fSecondDegraderThickness;
+  G4double           fFirstMetalizationThickness;
+  G4double           fSecondMetalizationThickness;
 
-    G4double           fFirstDegraderThickness;
-    G4double           fSecondDegraderThickness;
-    G4double           fFirstMetalizationThickness;
-    G4double           fSecondMetalizationThickness;
+  
+  G4bool             f5TFieldOn = true;
+  // G4double           fMagneticFieldStart;
+  G4ThreeVector fMgnt5TCenter;
+  G4double fMgnt5Tlength;
+  G4double fMgnt5Tradius;
+  
 
-    G4double           fMagneticFieldStart;
+  G4UserLimits*      fStepLimit;       // pointer to user step limits
 
-    G4UserLimits*      fStepLimit;       // pointer to user step limits
-
-    AEgISDetectorMessenger*  fMessenger;   // detector messenger
+  AEgISDetectorMessenger*  fMessenger;   // detector messenger
     
-// static...
+  // static...
 
-    static G4ThreadLocal AEgISMagneticField* fMagneticField;
-    static G4ThreadLocal G4FieldManager* fFieldMgr;
+  static G4ThreadLocal AEgISMagneticField* fMagneticField;
+  static G4ThreadLocal G4FieldManager* fFieldMgr;
     
-    G4bool  fCheckOverlaps; // option to activate checking of volumes overlaps 
+  G4bool  fCheckOverlaps; // option to activate checking of volumes overlaps 
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -29,6 +29,7 @@
  
 #include "AEgISDetectorConstruction.hh"
 #include "AEgISMagneticField.hh"
+#include "AEgISGlobalField.hh"
 #include "AEgISDetectorMessenger.hh"
 #include "AEgISTrackerSD.hh"
 
@@ -88,7 +89,7 @@ AEgISDetectorConstruction::AEgISDetectorConstruction():
   fWorldLV(NULL),
   fFirstDegraderLV(NULL),fFirstMetalizationLV(NULL),
   fSecondDegraderLV(NULL), fSecondMetalizationLV(NULL),
-  fDumpLV(NULL),fMagneticLV(NULL),
+  fDumpLV(NULL),fMgnt5TLV(NULL),
   fFirstDegraderMaterial(NULL),fFirstMetalizationMaterial(NULL),
   fSecondDegraderMaterial(NULL),fSecondMetalizationMaterial(NULL),
   fCheckOverlaps(true)
@@ -188,7 +189,7 @@ void AEgISDetectorConstruction::AddDetector(G4ThreeVector position, G4LogicalVol
 				  motherLV,   // its mother volume
 				  false,            // no boolean operations
 				  0,                // copy number
-				  fCheckOverlaps);  // checking overlaps
+				  false);  // checking overlaps
 
 // --------------------------------------------------------
 // tiny steps in the trace lines (made of Au) ...
@@ -207,9 +208,9 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
   // Sizes of the principal geometrical components (solids)
 // ==========================================================
   // beam tube for antiproton transport
-  G4double magneticRadius = 300 * mm;
+  fMgnt5Tradius = 300 * mm;
   // G4double magneticLength = 3500*mm; 
-  G4double magneticLength = 3570*mm; // full 5T
+  fMgnt5Tlength = 3570*mm; // full 5T
   
   // radius for the foils
   G4double foilRadius = 10.5 * mm;
@@ -225,18 +226,18 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
   
 
   // antiproton dump
-  G4double dumpRadius = 1.2*magneticRadius;
+  G4double dumpRadius = 1.2*fMgnt5Tradius;
 
   // spacer
   G4double spacerLength = 10*cm;
 
   // steps
   G4double maxFoilStep = 50*nm;
-  G4double maxFieldStep = magneticLength/10;
+  // G4double maxFieldStep = fMgnt5Tlength/10;
   G4double maxMetalizationStep = 5 * nm;
 
 // ==========================================================
-  G4double worldLength = 1.1 * (spacerLength/2 + magneticLength  + spacerLength/2);
+  G4double worldLength = 1.1 * (spacerLength/2 + fMgnt5Tlength  + spacerLength/2);
   G4double dumpLength = 0.01*worldLength;
   
   // Definitions of Solids, Logical Volumes, Physical Volumes
@@ -280,31 +281,31 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
   // *********************************************************
 
   
-   G4ThreeVector positionBField = G4ThreeVector(0,0,0);
-   // G4ThreeVector positionBeamTube = G4ThreeVector(0,0,-magneticLength);
-   G4cout << "Magnetic tube 5T is placed at " << positionBField << G4endl;
-   G4cout << "  From "<< positionBField[2] - magneticLength/2<<" to "<< positionBField[2] + magneticLength/2<<G4endl;
-   fMagneticFieldStart = positionBField[2] - magneticLength/2;
+   fMgnt5TCenter = G4ThreeVector(0,0,0);
+   // G4ThreeVector positionBeamTube = G4ThreeVector(0,0,-fMgnt5Tlength);
+   G4cout << "Magnetic tube 5T is placed at " << fMgnt5TCenter << G4endl;
+   G4cout << "  From "<< fMgnt5TCenter[2] - fMgnt5Tlength/2<<" to "<< fMgnt5TCenter[2] + fMgnt5Tlength/2<<G4endl;
+   // fMagneticFieldStart = positionBField[2] - fMgnt5Tlength/2;
   
    // BBBBBBBBBBBBBBBB overlapping magnetic field region BBBBBBBBBBBBBB
    // Tube with Local Magnetic field
   
-   fMagneticS = new G4Tubs("magneticTubs",
+   fMgnt5TS = new G4Tubs("magneticTubs",
 			   0.,
-			   magneticRadius,
-			   magneticLength/2,
+			   fMgnt5Tradius,
+			   fMgnt5Tlength/2,
 			   0.,
 			   360.*deg);
   
-   fMagneticLV = new G4LogicalVolume(fMagneticS,
-				     fVacuumMaterial,
-				     "MagneticLV");
+   fMgnt5TLV = new G4LogicalVolume(fMgnt5TS,
+				   fVacuumMaterial,
+				   "MagneticLV");
    
    // placement of Tube
 
-   fMagneticPV = new G4PVPlacement(0,              // no rotation
-				   positionBField, // at (x,y,z)
-				   fMagneticLV,   // its logical volume
+   fMgnt5TPV = new G4PVPlacement(0,              // no rotation
+				   fMgnt5TCenter, // at (x,y,z)
+				   fMgnt5TLV,   // its logical volume
 				   "MagneticField",       // its name
 				   //                    worldLV,        // its mother volume
 				   fWorldLV,        // its mother volume
@@ -312,23 +313,20 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
 				   0,              // copy number
 				   fCheckOverlaps); // checking overlaps
 
-   // set step limit in tube with magnetic field
-   fMagneticLV->SetUserLimits(new G4UserLimits(maxFieldStep));
-
    // BBBBBBBBBBBBBBBB
 
    G4bool firstFoil = (fFirstDegraderThickness > 0);
    // magnetic field starts 250 cm from the center of the experiment
    // first foil is positioned at 170 cm from the center
    // so it is 250 - 170 = 80 cm from the beginning of the magnetic field
-   G4ThreeVector positionFirstMetalization = G4ThreeVector(0,0, -magneticLength/2 + 80*cm + fFirstMetalizationThickness/2);
+   G4ThreeVector positionFirstMetalization = G4ThreeVector(0,0, -fMgnt5Tlength/2 + 80*cm + fFirstMetalizationThickness/2);
    
   if(firstFoil){ // only place thin degrader if its thickness is more than 0
     // this degrader has a metalization layer:
     // *********************************************************
     // ===== First degrader metalization layer (downstream) ====
     // *********************************************************
-    G4cout << "Metalization of the first foils is placed at " << positionBField + positionFirstMetalization << G4endl;
+    G4cout << "Metalization of the first foils is placed at " << fMgnt5TCenter + positionFirstMetalization << G4endl;
     
     fFirstMetalizationS = new G4Tubs("firstMetalization",
 				     0.,
@@ -348,7 +346,7 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
 					     positionFirstMetalization, // at (x,y,z)
 					     fFirstMetalizationLV,   // its logical volume
 					     "FirstMetalization",       // its name
-					     fMagneticLV,   // its mother volume
+					     fMgnt5TLV,   // its mother volume
 					     false,            // no boolean operations
 					     0,                // copy number
 					     fCheckOverlaps);  // checking overlaps 
@@ -366,7 +364,7 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
 
 
     G4ThreeVector positionFirstDegrader = positionFirstMetalization + G4ThreeVector(0,0, fFirstMetalizationThickness/2 + fFirstDegraderThickness/2);
-    G4cout << "First degrader foil is placed at " << positionBField + positionFirstDegrader << G4endl;
+    G4cout << "First degrader foil is placed at " << fMgnt5TCenter + positionFirstDegrader << G4endl;
 
     fFirstDegraderS = new G4Tubs("firstDegrader",
 				 0.,
@@ -386,7 +384,7 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
 					 positionFirstDegrader,// at (x,y,z)
 					 fFirstDegraderLV,   // its logical volume
 					 "FirstDegrader",       // its name
-					 fMagneticLV, // its mother volume
+					 fMgnt5TLV, // its mother volume
 					 false,          // no boolean operations
 					 0,              // copy number
 					 fCheckOverlaps); // checking overlaps 
@@ -410,8 +408,8 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
   // *********************************************************
   // main degrader is placed 111.9 cm from the center of the experiment
   // so it is 250 - 111.9 = 138.1 cm from beginning of the magnetic field
-  G4ThreeVector positionSecondDegrader(0,0,-magneticLength/2 + 138.1 * cm + fSecondDegraderThickness/2);
-  G4cout << "Second degrader foil is placed at " << positionBField + positionSecondDegrader << G4endl;
+  G4ThreeVector positionSecondDegrader(0,0,-fMgnt5Tlength/2 + 138.1 * cm + fSecondDegraderThickness/2);
+  G4cout << "Second degrader foil is placed at " << fMgnt5TCenter + positionSecondDegrader << G4endl;
   
   fSecondDegraderS = new G4Tubs("secondDegrader",
 				0.,
@@ -431,7 +429,7 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
 				       positionSecondDegrader, // at (x,y,z)
 				       fSecondDegraderLV,   // its logical volume
 				       "SecondDegrader",       // its name
-				       fMagneticLV, // its mother volume
+				       fMgnt5TLV, // its mother volume
 				       false,          // no boolean operations
 				       0,              // copy number
 				       fCheckOverlaps); // checking overlaps 
@@ -448,7 +446,7 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
 // *********************************************************
   
   G4ThreeVector positionSecondMetalization = positionSecondDegrader + G4ThreeVector(0,0, fSecondDegraderThickness/2 + fSecondMetalizationThickness/2);
-  G4cout << "Metalization of the second foil is placed at " << positionBField + positionSecondMetalization << G4endl;
+  G4cout << "Metalization of the second foil is placed at " << fMgnt5TCenter + positionSecondMetalization << G4endl;
 
 
   fSecondMetalizationS = new G4Tubs("secondMetalization",
@@ -469,7 +467,7 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
 					    positionSecondMetalization, // at (x,y,z)
 					    fSecondMetalizationLV,   // its logical volume
 					    "SecondMetalization",       // its name
-					    fMagneticLV,   // its mother volume
+					    fMgnt5TLV,   // its mother volume
 					    false,            // no boolean operations
 					    0,                // copy number
 					    fCheckOverlaps);  // checking overlaps 
@@ -507,27 +505,27 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
 					positionTrap5T, // at (x,y,z)
 					fTrap5TLV,   // its logical volume
 					"Trap5T",       // its name
-					fMagneticLV, // its mother volume
+					fMgnt5TLV, // its mother volume
 					false,          // no boolean operations
 					0,              // copy number
 					fCheckOverlaps); // checking overlaps 
   
   
-  fSecondMetalizationLV->SetUserLimits(new G4UserLimits(maxFieldStep));
+  fSecondMetalizationLV->SetUserLimits(new G4UserLimits(maxMetalizationStep));
 
   // *********************************************************
   // ======= electrode in the 5T trap    ===========
   // *********************************************************
   // let's assume that the electrode is 3 mm thick
-  G4ThreeVector positionElectrode = G4ThreeVector(0,0, trap5Tlength/2 - trapThickness/2 * mm);
-  G4cout << "HV Electrode is placed at " << positionBField + positionTrap5T + positionElectrode << G4endl;
+  G4ThreeVector positionElectrode = G4ThreeVector(0,0, trap5Tlength/2 - trapThickness/2);
+  G4cout << "HV Electrode is placed at " << fMgnt5TCenter + positionTrap5T + positionElectrode << G4endl;
   
   fHVElectrodeS = new G4Tubs("HVElectrodeS",
-				    0.,
-				    trapInnerD/2,
-				    trapThickness/2,
-				    0.*deg,
-				    360.*deg);
+			     0.,
+			     trapInnerD/2,
+			     trapThickness/2,
+			     0.*deg,
+			     360.*deg);
   
   fHVElectrodeLV = new G4LogicalVolume(fHVElectrodeS,
 				       fVacuumMaterial,
@@ -540,7 +538,7 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
 				     positionElectrode, // at (x,y,z)
 				     fHVElectrodeLV,   // its logical volume
 				     "HVElectrode",       // its name
-				     fTrap5TLV,   // its mother volume
+				     fMgnt5TLV,   // its mother volume
 				     false,            // no boolean operations
 				     0,                // copy number
 				     fCheckOverlaps);  // checking overlaps 
@@ -554,43 +552,43 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
   if(firstFoil){
     // first foil backward detector
     positionDetector  = positionFirstMetalization - G4ThreeVector(0,0, fFirstMetalizationThickness/2 + 2.5 * nm);
-    G4cout << " First foil backward detector is placed at " << positionBField + positionDetector << G4endl;
-    AddDetector(positionDetector, fMagneticLV, 0);
+    G4cout << " First foil backward detector is placed at " << fMgnt5TCenter + positionDetector << G4endl;
+    AddDetector(positionDetector, fMgnt5TLV, 0);
 
     // first foil backward detector
     positionDetector  = positionFirstMetalization + G4ThreeVector(0,0, fFirstMetalizationThickness/2 + fFirstDegraderThickness + 2.5 * nm);
-    G4cout << " First foil forward detector is placed at " << positionBField + positionDetector << G4endl;
-    AddDetector(positionDetector, fMagneticLV, 1);
+    G4cout << " First foil forward detector is placed at " << fMgnt5TCenter + positionDetector << G4endl;
+    AddDetector(positionDetector, fMgnt5TLV, 1);
   }
   
   // second foil backward detector
   positionDetector  = positionSecondDegrader - G4ThreeVector(0,0, fSecondDegraderThickness/2 + 2.5 * nm);
-  G4cout << " Second foil backward detector is placed at " << positionBField + positionDetector << G4endl;
-  AddDetector(positionDetector, fMagneticLV, 2);
+  G4cout << " Second foil backward detector is placed at " << fMgnt5TCenter + positionDetector << G4endl;
+  AddDetector(positionDetector, fMgnt5TLV, 2);
 
   // second foil forward detector
   positionDetector  = positionSecondDegrader + G4ThreeVector(0,0, fSecondDegraderThickness/2 + fSecondMetalizationThickness + 2.5 * nm);
-  G4cout << " Second foil forward detector is placed at " << positionBField + positionDetector << G4endl;
-  AddDetector(positionDetector, fMagneticLV, 3);
+  G4cout << " Second foil forward detector is placed at " << fMgnt5TCenter + positionDetector << G4endl;
+  AddDetector(positionDetector, fMgnt5TLV, 3);
 
   //=========== 5T trap detectors for trapping=========
   // 5T trap - inside
   // position it at the end of the 5T trap - inside
   positionDetector  = positionElectrode - G4ThreeVector(0,0, trapThickness/2 + 2.5 * nm);
-  G4cout << " 5T inside detector is placed at " << positionBField + positionDetector << G4endl;
-  AddDetector(positionDetector, fTrap5TLV, 6);
+  G4cout << " 5T inside detector is placed at " << fMgnt5TCenter + positionDetector << G4endl;
+  AddDetector(positionDetector, fMgnt5TLV, 6);
 
   // 5T trap - exit forward
   // position it just outside 5T at the end
   positionDetector  = positionTrap5T + G4ThreeVector(0,0, trap5Tlength/2 + 2.5 * nm);
-  G4cout << " 5T forward exist detector is placed at " << positionBField + positionDetector << G4endl;
-  AddDetector(positionDetector, fMagneticLV, 5);
+  G4cout << " 5T forward exist detector is placed at " << fMgnt5TCenter + positionDetector << G4endl;
+  AddDetector(positionDetector, fMgnt5TLV, 5);
 
   // 5T trap - exit backward
   // position it at the front of 5T trap - inside
   positionDetector  = -G4ThreeVector(0,0, trap5Tlength/2 - 2.5 * nm);
-  G4cout << " 5T backward exit detector is placed at " << positionBField + positionTrap5T + positionDetector << G4endl;
-  AddDetector(positionDetector, fTrap5TLV, 6);
+  G4cout << " 5T backward exit detector is placed at " << fMgnt5TCenter + positionTrap5T + positionDetector << G4endl;
+  AddDetector(positionDetector, fMgnt5TLV, 6);
 
   
 // *********************************************************
@@ -663,7 +661,7 @@ G4VPhysicalVolume* AEgISDetectorConstruction::DefineVolumes()
  
   G4VisAttributes* magneticVisAtt= new G4VisAttributes(G4Colour(0.9,0.9,0.9,0.2));
   magneticVisAtt->SetForceAuxEdgeVisible(true);
-  fMagneticLV->SetVisAttributes(magneticVisAtt);
+  fMgnt5TLV->SetVisAttributes(magneticVisAtt);
 
   G4VisAttributes* trapVisAtt= new G4VisAttributes(G4Colour(1.,1.0,0.0));
   trapVisAtt->SetForceAuxEdgeVisible(true);
@@ -750,20 +748,25 @@ void AEgISDetectorConstruction::ConstructSDandField()
     fDetectorLV[6]->SetSensitiveDetector(trapBackwardDetector);
   }
 
-  
+
+  if (!fFieldSetUp.Get()) {
+     AEgISGlobalField* field = AEgISGlobalField::GetObject(this);
+     G4AutoDelete::Register(field);  // Kernel will delete the AEgISGlobalField
+     fFieldSetUp.Put(field);
+  }
   // Create global magnetic field messenger.
   // Uniform magnetic field is then created automatically if
   // the field value is not zero.
   
   // magnetic field ----------------------------------------------------------
-  fMagneticField = new AEgISMagneticField(fMagneticFieldStart);
-  fFieldMgr = new G4FieldManager();
-  fFieldMgr->SetDetectorField(fMagneticField);
-  fFieldMgr->CreateChordFinder(fMagneticField);
-  //
-  // associate this field manager with the logical volume (magnetic volume)
-  G4bool forceToAllDaughters = true;
-  if(fBFieldOn) fMagneticLV->SetFieldManager(fFieldMgr, forceToAllDaughters);
+  // fMagneticField = new AEgISMagneticField(fMagneticFieldStart);
+  // fFieldMgr = new G4FieldManager();
+  // fFieldMgr->SetDetectorField(fMagneticField);
+  // fFieldMgr->CreateChordFinder(fMagneticField);
+  // //
+  // // associate this field manager with the logical volume (magnetic volume)
+  // G4bool forceToAllDaughters = true;
+  // if(fBFieldOn) fMgnt5TLV->SetFieldManager(fFieldMgr, forceToAllDaughters);
   
 }
 
@@ -871,12 +874,10 @@ void AEgISDetectorConstruction::SetSecondMetalizationMaterial(G4String materialN
 
 void AEgISDetectorConstruction::SetMagneticField(G4bool state)
 {
-  fBFieldOn = state;
-  if(fMagneticLV){
-    if(fBFieldOn)fMagneticLV->SetFieldManager(fFieldMgr, true);
-    else fMagneticLV->SetFieldManager(NULL, true);
+  f5TFieldOn = state;
+  if ( G4StateManager::GetStateManager()->GetCurrentState() != G4State_PreInit ) {
+    G4RunManager::GetRunManager()->ReinitializeGeometry();
   }
-
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

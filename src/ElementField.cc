@@ -34,19 +34,18 @@ ElementField::ElementField(G4ThreeVector c, G4LogicalVolume* lv)
 
   fColor = "1,1,1";
 
-  fUserLimits = new G4UserLimits();
-
   fVolume = lv;
-  fVolume->SetVisAttributes(GetVisAttribute(fColor));
+  //fVolume->SetVisAttributes(GetVisAttribute(fColor));
 
   fMaxStep = 1*mm;
+  fUserLimits = new G4UserLimits(fMaxStep);
 
-  fUserLimits->SetMaxAllowedStep(fMaxStep);
+  // fUserLimits->SetMaxAllowedStep(fMaxStep);
 
-  fUserLimits->SetUserMaxTrackLength(500.*m);
-  fUserLimits->SetUserMaxTime(10*ms);
-  fUserLimits->SetUserMinEkine(0.1*MeV);
-//  fUserLimits->SetUserMinRange(1*mm);
+  // fUserLimits->SetUserMaxTrackLength(500.*m);
+  // fUserLimits->SetUserMaxTime(10*ms);
+  // fUserLimits->SetUserMinEkine(0.1*MeV);
+  // fUserLimits->SetUserMinRange(1*mm);
 
   fVolume->SetUserLimits(fUserLimits);
 }
