@@ -160,7 +160,7 @@ G4VPhysicalVolume* B2bDetectorConstruction::DefineVolumes()
   G4double magneticLength = 150*cm;
   
   // radius for the foils
-  G4double foilRadius = 7.5 * cm;
+  G4double foilRadius = 15 * mm;
 
   // antiproton dump (Au)
   G4double dumpRadius = 1.2*magneticRadius;
