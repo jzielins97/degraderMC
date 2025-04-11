@@ -48,7 +48,14 @@ public:
   
   virtual void BeginOfRunAction(const G4Run* run);
   virtual void   EndOfRunAction(const G4Run* run);
-
+  virtual void AbortEvent();
+  virtual void AnnihilationEvent();
+  void KilledEvent();
+  void NormalEvent();
+private:
+  G4int fAnnihilationEvents;
+  G4int fKilledEvents;
+  G4int fNormalEvents;
   
 };
 

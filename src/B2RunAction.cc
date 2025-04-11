@@ -36,7 +36,10 @@
 
 B2RunAction::B2RunAction()
  : G4UserRunAction()
-{ 
+{
+  fAnnihilationEvents = 0;
+  fKilledEvents = 0;
+  fNormalEvents = 0;
   // set printing event number per each 100 events
   G4RunManager::GetRunManager()->SetPrintProgress(1000);
   auto man = G4AnalysisManager::Instance();
@@ -57,6 +60,12 @@ B2RunAction::B2RunAction()
   man->CreateNtupleDColumn("kineticEnergy_keV");
   man->FinishNtuple();
 
+  man->CreateNtuple("fRunSummary","Summary of the events in the run");
+  man->CreateNtupleIColumn("annihilations");
+  man->CreateNtupleIColumn("normal");
+  man->CreateNtupleIColumn("killed");
+  man->FinishNtuple();
+  
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -80,10 +89,44 @@ void B2RunAction::BeginOfRunAction(const G4Run*)
 
 void B2RunAction::EndOfRunAction(const G4Run *)
 {
+  G4cout << "Run finished with:"<<G4endl;
+  G4cout << "Normal events:"<<fNormalEvents<<G4endl;
+  G4cout << "Killed events:"<<fKilledEvents<<G4endl;
+  G4cout << "Annihilation events:"<<fAnnihilationEvents<<G4endl;
   auto man = G4AnalysisManager::Instance();
+
+  man->FillNtupleIColumn(3,0,fAnnihilationEvents);
+  man->FillNtupleIColumn(3,1,fNormalEvents);
+  man->FillNtupleIColumn(3,2,fKilledEvents);
+  man->AddNtupleRow(3);
 
   man->Write();
   man->CloseFile();
+
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void B2RunAction::AbortEvent(){
+  G4RunManager::GetRunManager()->AbortEvent();
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void B2RunAction::AnnihilationEvent(){
+  fAnnihilationEvents+=1;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void B2RunAction::KilledEvent(){
+  fKilledEvents+=1;
+}
+
+//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+void B2RunAction::NormalEvent(){
+  fNormalEvents+=1;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

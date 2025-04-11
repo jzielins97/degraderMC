@@ -80,3 +80,28 @@
 #
 # For file-based drivers, use this to create an empty detector view:
 #/vis/viewer/flush
+
+
+# set background to white
+/vis/viewer/set/background 1 1 1
+
+# set colour of the magnetic field to blue
+/vis/geometry/set/colour MagneticLV 1 0 0 1
+
+# set first foil colour to yellow
+/vis/geometry/set/colour FirstDegraderLV 0 1 1 0
+
+# set second foil colour to magenta
+/vis/geometry/set/colour SecondDegraderLV 1 1 0 1
+
+# set position of the camera
+/vis/viewer/set/viewpointThetaPhi 45 -150
+
+# cut the view
+# /vis/viewer/addCutawayPlane 0 0 0 m -1 0 0
+
+# zoom the image
+/vis/viewer/zoom 2
+
+# add magnetic field visualisation
+/vis/scene/add/magneticField

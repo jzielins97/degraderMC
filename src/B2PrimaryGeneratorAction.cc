@@ -56,7 +56,7 @@ B2PrimaryGeneratorAction::B2PrimaryGeneratorAction()
 
   fParticleGun->SetParticleDefinition(particleDefinition);
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
-  fParticleGun->SetParticleEnergy(3.0*GeV);
+  fParticleGun->SetParticleEnergy(100.0*keV);
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -92,12 +92,13 @@ void B2PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 // generate a Gaussian random number with standard deviation sigma
 
-  G4double sigxy = 0.5*mm;
+  G4double sigxy = 10*mm;
 //  G4double x0 = G4INCL::Random::gauss(sigxy) + 2.*mm;
   G4double x0 = G4INCL::Random::gauss(sigxy);
   G4double y0 = G4INCL::Random::gauss(sigxy);
 
-  fParticleGun->SetParticlePosition(G4ThreeVector(0., 0., -worldZHalfLength/1.1));
+  // fParticleGun->SetParticlePosition(G4ThreeVector(0., 0., -worldZHalfLength/1.1));
+  fParticleGun->SetParticlePosition(G4ThreeVector(x0, y0, -worldZHalfLength/1.1));
 
 //  and add an offset of 2 mm along x
 

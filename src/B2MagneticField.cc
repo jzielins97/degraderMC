@@ -117,11 +117,11 @@ void B2MagneticField::GetFieldValue(const G4double position[4],G4double *bField)
 
 // cordinates are in mm, map is in cm
 
-  G4double radius = sqrt(position[0]*position[0] + position[1]*position[1])/10.;
+  G4double radius = sqrt(position[0]*position[0] + position[1]*position[1])/10.; // cm
   // G4int index = position[2]/10;
   // index = (index+250)*301 + (radius*10);
-  G4int index = (position[2] - fMagneticFieldStart)/10;
-  index = index*301 + radius*10;
+  G4int z = (position[2] - fMagneticFieldStart)/10; // cm
+  G4int index = z*301 + radius*10;
   
 
 //      G4cout << " vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv" << G4endl;      
@@ -137,16 +137,21 @@ void B2MagneticField::GetFieldValue(const G4double position[4],G4double *bField)
        (index<0)) {
     bField[0] = 0.;
     bField[1] = 0.;
-    bField[2] = 0.01; // for now, if this works, change to 0.1
+    bField[2] = -0.01; // for now, if this works, change to 0.1
+    // G4cout<<"WARNING:outside defined region for magnetic field"<<G4endl;
+    // G4cout << " Position: " << " r=" << radius << " z= " << (-250*cm + position[2] - fMagneticFieldStart)/cm << " index=" << index <<  G4endl;
   } else {
     if (radius!=0.) {
-      bField[0] = aegisbR[index]*position[0]/radius/10000.;
-      bField[1] = aegisbR[index]*position[1]/radius/10000.;
+      bField[0] = aegisbR[index]/10000.*(position[0]/10/radius); // position is in mm, but the radius is in cm
+      bField[1] = aegisbR[index]/10000.*(position[1]/10/radius);
     } else {
       bField[0] = 0.;
       bField[1] = 0.;
     }
     bField[2] = aegisbZ[index]/10000.;
+    // G4cout << " Position: " << " r=" << radius << " (" << aegisrB[index] << ") z= " << (-250*cm + position[2] - fMagneticFieldStart)/cm << " (" << aegiszB[index] << ") index=" << index <<  G4endl;
+    // G4cout << " Magnetic field: Bx=" << bField[0] << " By=" << bField[1] << " Bz=" << bField[2] << " ; " << aegisbR[index] << " " << aegisbZ[index] << G4endl;
+  
   }
 
     //  if ((index>=aegisbGranularity)||(index<0)) {

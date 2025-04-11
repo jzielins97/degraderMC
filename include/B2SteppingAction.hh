@@ -56,6 +56,7 @@ class B2SteppingAction : public G4UserSteppingAction
     B2EventAction*  fEventAction;
     G4LogicalVolume* fScoringVolume;
     G4SteppingManager* fManager;
+    G4int fStuckSteps;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

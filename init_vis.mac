@@ -11,7 +11,7 @@
 #
 # Foil geometry
 /AEgIS/degrader/setFirstMaterial G4_NAPHTHALENE
-/AEgIS/degrader/setFirstThickness 0 nm
+/AEgIS/degrader/setFirstThickness 200 nm
 
 /AEgIS/degrader/setSecondMaterial G4_MYLAR
 /AEgIS/degrader/setSecondThickness 1400 nm

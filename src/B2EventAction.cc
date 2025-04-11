@@ -40,7 +40,10 @@
 B2EventAction::B2EventAction(B2RunAction* runAction)
 : G4UserEventAction(),
   fRunAction(runAction)
-{}
+{
+  fAnnihilationEvent=false;
+  fKilledEvent=false;
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -50,12 +53,19 @@ B2EventAction::~B2EventAction()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void B2EventAction::BeginOfEventAction(const G4Event*)
-{}
+{
+  fAnnihilationEvent=false;
+  fKilledEvent=false;
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void B2EventAction::EndOfEventAction(const G4Event* event)
 {
+  if(fKilledEvent) fRunAction->KilledEvent();
+  else if(fAnnihilationEvent) fRunAction->AnnihilationEvent();
+  else fRunAction->NormalEvent();
+  
   // get number of stored trajectories
 
   G4TrajectoryContainer* trajectoryContainer = event->GetTrajectoryContainer();

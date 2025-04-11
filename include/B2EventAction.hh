@@ -31,10 +31,11 @@
 #define B2EventAction_h 1
 
 #include "G4UserEventAction.hh"
+#include "B2RunAction.hh"
 
 #include "globals.hh"
 
-class B2RunAction;
+// class B2RunAction;
 
 /// Event action class
 
@@ -46,9 +47,13 @@ class B2EventAction : public G4UserEventAction
 
     virtual void  BeginOfEventAction(const G4Event* );
     virtual void    EndOfEventAction(const G4Event* );
+    virtual void IsKilledEvent(){fKilledEvent=true;}
+    virtual void IsAnnihilationEvent(){fAnnihilationEvent=true;}
 
   private:
     B2RunAction* fRunAction;
+    G4bool fKilledEvent;
+    G4bool fAnnihilationEvent;
 
 };
 
