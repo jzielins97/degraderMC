@@ -85,12 +85,25 @@ void B2SteppingAction::UserSteppingAction(const G4Step* step)
     track->SetTrackStatus(fStopAndKill);
     return;
   }
-  
-  // check if the momentum direction is not perpendicular to the BField
+
   G4ThreeVector direction = track->GetMomentumDirection();
   G4ThreeVector position = track->GetPosition();
   G4ThreeVector postDirection = step->GetPostStepPoint()->GetMomentumDirection();
   G4ThreeVector postPosition = step->GetPostStepPoint()->GetPosition();
+
+  G4VPhysicalVolume* ph_volume = step->GetPreStepPoint()->GetPhysicalVolume();
+  G4VPhysicalVolume* post_ph_volume = step->GetPostStepPoint()->GetPhysicalVolume();
+  // Check if antiproton is moving in oposite direction
+  
+  if(direction[2] < 0 && ( post_ph_volume->GetName() == "MagneticField" || post_ph_volume->GetName() == "World" ) ){
+    // G4cerr << "Antiproton moving backwards at ("<<position[0] <<","<<position[1]<<","<<position[2]<<") -> stop it" <<G4endl;
+    if( ph_volume->GetName() == "MagneticField" || ph_volume->GetName() == "World" ) fEventAction->IsKilledEvent();
+    // fEventAction->IsKilledEvent();
+    track->SetTrackStatus(fStopAndKill);
+    return;
+  }
+  
+  // check if the momentum direction is not perpendicular to the BField
   // G4cout << preDirection << " " << step->GetPreStepPoint()->GetPosition()<<G4endl;
   if(direction[2] < 1e-6 && abs(postPosition[2] - position[2]) < 0.1 * CLHEP::nm){
     fStuckSteps += 1;
@@ -105,17 +118,6 @@ void B2SteppingAction::UserSteppingAction(const G4Step* step)
     }
   }else{
     fStuckSteps=0;
-  }
-  
-  
-  
-  G4VPhysicalVolume* ph_volume = step->GetPostStepPoint()->GetPhysicalVolume();
-  // Check if antiproton is moving in oposite direction
-  if(direction[2] < 0 && ( ph_volume->GetName() == "MagneticField" || ph_volume->GetName() == "World" ) ){
-    // G4cerr << "Antiproton moving backwards at ("<<position[0] <<","<<position[1]<<","<<position[2]<<") -> stop it" <<G4endl;
-    track->SetTrackStatus(fStopAndKill);
-    fEventAction->IsKilledEvent();
-    return;
   }
 
   const G4VProcess* G4ProcessAfter = step->GetPostStepPoint()->GetProcessDefinedStep();
